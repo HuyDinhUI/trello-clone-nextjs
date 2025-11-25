@@ -1,16 +1,12 @@
-"use client"
+"use client";
 
 import API from "@/utils/axios";
 import { createContext, useState, useEffect } from "react";
 
 interface AuthContextType {
   user: UserType | null;
-  setUser: React.Dispatch<React.SetStateAction<UserType | null>>;
   loading: boolean;
-}
-
-interface AuthProviderProps {
-  children: React.ReactNode;
+  setUser: (user: UserType | null) => void;
 }
 
 interface UserType {
@@ -21,29 +17,42 @@ interface UserType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<UserType | null>(null); 
-  const [loading, setLoading] = useState<boolean>(true);
+const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [auth, setAuth] = useState({
+    loading: true,
+    user: null as UserType | null,
+  });
 
-  
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const res = await API.post("/account/info");
-        console.log(res.data.username)
-        setUser(res.data);
+        setAuth({
+          loading: false,
+          user: res.data,
+        });
       } catch (err: any) {
-        console.log(err?.response?.data?.message)
-        setUser({ id: "", username: "", role: "" });
-      } finally {
-        setLoading(false);
+        
+        setAuth({
+          loading: false,
+          user: null,
+        });
+
+        throw err
       }
     };
+
     fetchUser();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading }}>
+    <AuthContext.Provider
+      value={{
+        user: auth.user,
+        loading: auth.loading,
+        setUser: (u) => setAuth({ ...auth, user: u }),
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

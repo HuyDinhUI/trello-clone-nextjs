@@ -1,4 +1,4 @@
-
+"use client"
 import { IconSearch } from '@tabler/icons-react';
 import React, { useEffect, useRef, useState } from 'react'
 

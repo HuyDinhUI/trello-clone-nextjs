@@ -26,9 +26,11 @@ import { useAuth } from "@/hooks/useAuth";
 export const Header = () => {
   const [theme, setTheme] = useState<string | null>("light");
   const router = useRouter();
-  const {user} = useAuth()
+  const { user, loading } = useAuth();
 
-   useEffect(() => {
+  console.log(user);
+
+  useEffect(() => {
     const getTheme = () => {
       setTheme(localStorage.getItem("theme"));
     };
@@ -37,26 +39,13 @@ export const Header = () => {
   }, []);
 
   useEffect(() => {
+    localStorage.setItem("theme", theme ?? "light");
     if (theme === "dark") {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
   }, [theme]);
-
-
-  const AccountItems: MenuItem[] = [
-    { label: user?.username ?? '', icon: <AvatarDemo /> },
-    { label: "Settings", icon: <Settings2 size={16} /> },
-    { label: "Help", icon: <HelpCircle size={16} /> },
-    { separator: true },
-    {
-      label: "Logout",
-      icon: <IconLogout size={16} />,
-      onClick: () => Logout(),
-      dialog: AlertDialogDelete,
-    },
-  ];
 
   const Logout = async () => {
     try {
@@ -69,7 +58,20 @@ export const Header = () => {
     }
   };
 
- 
+  const accountItems: MenuItem[] = [
+    { label: user?.username ?? "", icon: <AvatarDemo /> },
+    { label: "Settings", icon: <Settings2 size={16} /> },
+    { label: "Help", icon: <HelpCircle size={16} /> },
+    { separator: true },
+    {
+      label: "Logout",
+      icon: <IconLogout size={16} />,
+      onClick: () => Logout(),
+      dialog: AlertDialogDelete,
+    },
+  ];
+
+  if (loading) return null;
 
   return (
     <div className="flex px-3 py-2 items-center">
@@ -111,7 +113,7 @@ export const Header = () => {
           side="bottom"
           align="end"
           trigger={<Button variant="icon" size="ic" icon={<AvatarDemo />} />}
-          items={AccountItems}
+          items={accountItems}
           size="md"
         />
       </div>

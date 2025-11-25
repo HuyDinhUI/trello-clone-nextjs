@@ -1,5 +1,6 @@
 
 import axios from 'axios'
+import { redirect } from 'next/navigation'
 
 
 const API = axios.create({
@@ -29,7 +30,7 @@ API.interceptors.response.use(
     // Optional: handle global errors
     if (error.response?.status === 401) {
       // logout, redirect, or show message
-      console.error('Unauthorized')
+      redirect('/auth/login')
     }
     return Promise.reject(error)
   }

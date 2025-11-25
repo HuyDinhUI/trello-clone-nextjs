@@ -1,3 +1,5 @@
+"use client"
+
 import {AlertCircleIcon} from "lucide-react"
 type AlertProps = {
     title: string

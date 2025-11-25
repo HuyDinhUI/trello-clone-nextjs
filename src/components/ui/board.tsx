@@ -1,4 +1,4 @@
-
+"use client"
 import { useState, type ReactNode } from "react"
 import {IconStar,IconStarFilled} from '@tabler/icons-react'
 import Link from "next/link"

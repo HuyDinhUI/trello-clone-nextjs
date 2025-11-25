@@ -14,8 +14,9 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --card: oklch(26.862% 0.00003 271.152);
+    --background: oklch(20.019% 0.00002 271.152);
+    --foreground: oklch(0.985 0 0);
   }
 }
 
@@ -23,4 +24,55 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@theme {
+  --animate-checkbox: fade 0.5s ease-in-out;
+  --animate-fadeIn: fadeIn 300ms ease-out;
+  --animate-fadeOut: fadeOut 300ms ease-in;
+  --animate-zoomIn: zoomIn 300ms ease-out;
+
+  @keyframes fade {
+
+    0%,
+    50% {
+      opacity: 0;
+
+    }
+
+    100% {
+      opacity: 1;
+
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes zoomIn {
+    from {
+      transform: scale(0);
+    }
+
+    to{
+      transform: scale(1);
+    }
+  }
 }

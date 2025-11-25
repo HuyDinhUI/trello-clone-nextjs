@@ -1,3 +1,5 @@
+"use client"
+
 import type { ReactNode } from 'react';
 import React from 'react';
 
@@ -18,13 +20,13 @@ const variantClass: Record<ButtonVariant, string> = {
     danger: 'bg-red-500 rounded hover:bg-red-600 text-white',
     dark: 'bg-black rounded hover:bg-black/80 text-white dark:bg-gray-200 dark:text-black dark:hover:bg-white',
     outline: 'rounded ring ring-gray-200 dark:ring-gray-500 hover:bg-white/10',
-    icon: 'rounded hover:bg-gray-600/20',
+    icon: 'rounded-full hover:bg-gray-600/10',
     transparent: 'bg-transparent',
     item: 'bg-transparent dark:text-gray-300'
 };
 
 const sizeClass: Record<ButtonSize, string> = {
-    sm: 'px-3 py-1 text-sm',
+    sm: 'px-3 py-2 text-sm',
     md: 'px-4 py-2 text-base',
     lg: 'px-5 py-3 text-lg',
     ic: 'p-2',
