@@ -12,7 +12,7 @@ const BoardsPage = async () => {
     cache: "no-store",
   }).then((res) => res.json());
 
-  return <Boards board={data} />;
+  return <Boards data={data} />;
 };
 
 export default BoardsPage;

@@ -1,14 +1,41 @@
-import { configureStore } from '@reduxjs/toolkit'
-import boardReducer from "./boardSlice"
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import boardReducer from "./boardSlice";
+import userReducer from "./userSlice";
+import storage from "redux-persist/lib/storage";
+import {
+  persistReducer,
+  persistStore,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
 
-export const makeStore = () => {
-  return configureStore({
-    reducer: {
-      board: boardReducer,
-    },
-  })
-}
+const persistConfig = {
+  key: "root",
+  storage,
+  whitelist: ["user"],
+};
 
-export type AppStore = ReturnType<typeof makeStore>
-export type RootState = ReturnType<AppStore['getState']>
-export type AppDispatch = AppStore['dispatch']
+const rootReducer = combineReducers({
+  user: userReducer,
+  board: boardReducer,
+});
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+export const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
+});
+
+export const persistor = persistStore(store);
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

@@ -9,6 +9,7 @@ export interface Board {
   memberIds: User[];
   columns: string[];
   columnsOrder: Column[];
+  starred: boolean
 }
 
 export interface Column {
@@ -16,6 +17,7 @@ export interface Column {
   title: string;
   boardId: string;
   cards: Card[];
+  isTemp?: boolean
 }
 
 type checklist = {
@@ -34,6 +36,7 @@ export interface Card {
   checklist: checklist[];
   joined: User[];
   FE_placeholderCard?: boolean;
+  isTemp?: boolean
 }
 
 

@@ -9,21 +9,17 @@ import { AlertDanger } from "@/components/ui/alert";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { GoogleIcon } from "@/assets/icons";
-import { useAuth } from "@/hooks/useAuth";
 
 const FormLogin = () => {
   const { register, handleSubmit } = useForm();
-  const router = useRouter()
+  const router = useRouter();
   const [error, setError] = useState(undefined);
   const [theme, setTheme] = useState<string | null>("light");
-  const {setUser} = useAuth()
 
   const submitLogin = async (data: any) => {
-    console.log(data);
     try {
       const res = await API.post("/authorization/login", data);
       if (res.data.role === "customer") {
-        setUser(res.data.username)
         router.push("/dashboard/boards");
       }
     } catch (error: any) {

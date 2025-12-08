@@ -9,9 +9,8 @@ import { Edit, Paperclip, SquareCheckBig, Text, Trash } from "lucide-react";
 import { CSS } from "@dnd-kit/utilities";
 import CheckboxDemo from "../ui/checkbox";
 import { Button } from "../ui/button";
-import AlertDialogDemo from "../ui/alert-dialog";
 import { Dialog } from "../ui/dialog";
-import { CardDetail } from "../card-detail";
+import { CardDetail } from "./card-detail";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { AppDispatch } from "@/store";
 import { deleteCard, updateCard } from "@/store/boardSlice";
@@ -43,11 +42,8 @@ export const Card = ({ item }: CardProps) => {
 
   const handleDeleteCard = async () => {
     dispatch(deleteCard({ columnId: item.columnId, cardId: item._id }));
-    
-    try {
-      await CardService.deleteCard(item._id)
-    }
-    catch {}
+
+    await CardService.deleteCard(item._id);
   };
 
   const markCard = async (
@@ -59,9 +55,7 @@ export const Card = ({ item }: CardProps) => {
     const newData = { ...item, [field]: value };
     dispatch(updateCard({ columnId, cardId, field, value }));
 
-    try {
-      await CardService.updateContent(newData);
-    } catch {}
+    await CardService.updateContent(newData);
   };
 
   return (
@@ -72,7 +66,7 @@ export const Card = ({ item }: CardProps) => {
       {...listeners}
       className={`bg-white dark:bg-card rounded-xl group shadow-sm cursor-pointer border-2 border-transparent hover:border-blue-800 overflow-hidden relative ${
         item.FE_placeholderCard
-          ? "opacity-0 h-0 p-0 mt-0 shadow-none border-none"
+          ? "opacity-0 h-1 p-0 mt-0 shadow-none border-none"
           : "opacity-100 mt-2"
       }`}
     >
@@ -106,18 +100,12 @@ export const Card = ({ item }: CardProps) => {
           </Dialog>
         </div>
         <div className="flex gap-2 items-center opacity-0 group-hover:opacity-100 transition-opacity duration-100 absolute top-1 right-1">
-          <AlertDialogDemo
-            onclick={() => handleDeleteCard()}
-            label="Are you sure delete this card?"
-            description=""
-            trigger={
-              <Button
-                className="bg-white rounded-full"
-                variant="transparent"
-                size="ic"
-                icon={<Trash size={13} />}
-              />
-            }
+          <Button
+            className="bg-white rounded-full"
+            variant="transparent"
+            size="ic"
+            icon={<Trash size={13} />}
+            onClick={() => handleDeleteCard()}
           />
 
           <Dialog

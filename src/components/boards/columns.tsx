@@ -16,9 +16,10 @@ import { AppDispatch } from "@/store";
 import {
   addCard,
   addColumn,
+  asyncIdCard,
+  asyncIdColumn,
   deleteColumn,
   editLabel,
-  fetchBoard,
 } from "@/store/boardSlice";
 import { ColumnService } from "@/services/column.service";
 import { CardService } from "@/services/card.service";
@@ -60,23 +61,19 @@ export const Column = ({
   };
 
   const [labelInputCard, setLabelInputCard] = useState<string>("");
-  const [labelInputColumn, setLabelInputColumn] = useState<string>("");
 
   useEffect(() => {
     const handleClickOutside = async (event: MouseEvent) => {
       if (input.current && !input.current.contains(event.target as Node)) {
-        dispatch(editLabel({ columnId: id, value: labelInputColumn }));
+        dispatch(editLabel({ columnId: id, value: input.current.value }));
         setOpenEditLabel(false);
-        setLabelInputColumn("");
 
         const data = {
-          title: labelInputColumn,
+          title: input.current.value,
           columnId: id,
         };
 
-        try {
-          await ColumnService.updateColumn(data);
-        } catch {}
+        await ColumnService.updateColumn(data);
       }
     };
 
@@ -84,7 +81,7 @@ export const Column = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [labelInputColumn]);
+  }, [dispatch, id]);
 
   const handleCreateCard = async () => {
     dispatch(addCard({ label: labelInputCard, columnId: id }));
@@ -97,7 +94,8 @@ export const Column = ({
     };
 
     try {
-      await CardService.createCard(data);
+      const res = await CardService.createCard(data);
+      dispatch(asyncIdCard({ id: res.data._id, columnId: id }));
     } catch {}
   };
 
@@ -112,26 +110,9 @@ export const Column = ({
   const ActionsBoardItems: MenuItem[] = [
     {
       label: "Add card",
-      children: [
-        {
-          element: (
-            <div className="py-3">
-              <textarea
-                className="w-full resize-none p-2 rounded-md bg-white dark:bg-background ring ring-gray-100 outline-blue-500"
-                placeholder="Enter a title or past a link"
-                autoFocus
-                onChange={(e) => setLabelInputCard(e.target.value)}
-              ></textarea>
-              <Button
-                onClick={() => handleCreateCard()}
-                title="Add"
-                variant="primary"
-                className="mt-2"
-              />
-            </div>
-          ),
-        },
-      ],
+      onClick() {
+        setOpenCreate(true);
+      },
     },
     { label: "Copy list" },
     { label: "Move list" },
@@ -180,7 +161,6 @@ export const Column = ({
           ) : (
             <textarea
               defaultValue={label}
-              onChange={(e) => setLabelInputColumn(e.target.value)}
               ref={input}
               autoFocus
               onBlur={() => setOpenEditLabel(false)}
@@ -264,7 +244,9 @@ export const ListColumns = ({ columns }: ListColumnsProps) => {
       cards: [],
     };
     try {
-      await ColumnService.createColumn(data);
+      const res = await ColumnService.createColumn(data);
+      console.log(res.data);
+      dispatch(asyncIdColumn({ id: res.data._id }));
     } catch {}
   };
 

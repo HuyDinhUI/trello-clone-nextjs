@@ -1,9 +1,9 @@
 "use client";
 
-import CheckboxDemo from "./ui/checkbox";
+import CheckboxDemo from "../ui/checkbox";
 import { useRef, useState } from "react";
-import { Popover } from "./ui/popover";
-import { Button } from "./ui/button";
+import { Popover } from "../ui/popover";
+import { Button } from "../ui/button";
 import {
   Clock,
   Ellipsis,
@@ -17,7 +17,7 @@ import {
 import { COVER_COLOR, COVER_PHOTOS } from "@/mock/cover-data";
 import Image from "next/image";
 import "quill/dist/quill.snow.css";
-import Editor from "./ui/editor";
+import Editor from "../ui/editor";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { AppDispatch } from "@/store";
 import { updateCard } from "@/store/boardSlice";

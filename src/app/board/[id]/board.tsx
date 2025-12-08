@@ -2,7 +2,7 @@
 
 import { ListColumns } from "@/components/boards/columns";
 import { Button } from "@/components/ui/button";
-import { Filter, Ellipsis, Star } from "lucide-react";
+import { Filter, Ellipsis } from "lucide-react";
 import {
   DndContext,
   useSensor,
@@ -10,9 +10,8 @@ import {
   PointerSensor,
   DragOverlay,
   defaultDropAnimationSideEffects,
-  closestCorners,
 } from "@dnd-kit/core";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { arrayMove } from "@dnd-kit/sortable";
 import { Column } from "@/components/boards/columns";
 import { Card, ListCard } from "@/components/boards/card";
@@ -23,8 +22,15 @@ import { toast } from "react-toastify";
 import { useParams } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { AppDispatch, RootState } from "@/store";
-import { fetchBoard, setColumn } from "@/store/boardSlice";
+import { fetchBoard, setColumn, updateBoard } from "@/store/boardSlice";
 import { SkeletonBoardPage } from "@/components/ui/skeleton";
+import { customCollisionDetection } from "@/lib/collisionDetection";
+import { Input } from "@/components/ui/input";
+import { Board as BoardType } from "@/types/board.type";
+import { IconStar, IconStarFilled } from "@tabler/icons-react";
+import { BoardService } from "@/services/board.service";
+import { updateRecentBoard } from "@/store/userSlice";
+import { UserService } from "@/services/user.service";
 
 const TYPE_ACTIVE_DND = {
   COLUMN: "T_COLUMN",
@@ -32,30 +38,40 @@ const TYPE_ACTIVE_DND = {
 };
 
 const Board = () => {
+  const { id } = useParams();
+  const dispatch = useAppDispatch<AppDispatch>();
+  const { board, columns, loading } = useAppSelector(
+    (state: RootState) => state.board
+  );
+
   const pointerSensor = useSensor(PointerSensor, {
     activationConstraint: {
       distance: 10,
     },
   });
   const sensors = useSensors(pointerSensor);
-  const dispatch = useAppDispatch<AppDispatch>();
-  const { board, columns, loading, error } = useAppSelector(
-    (state: RootState) => state.board
-  );
-  
   const [activeDragItemId, setActiveDragItemId] = useState<string | null>(null);
   const [activeDragItemType, setActiveDragItemType] = useState<string | null>(
     null
   );
   const [activeDragItemData, setActiveDragItemData] = useState<any>(null);
 
-  const { id } = useParams();
-
   useEffect(() => {
     if (!id) return;
 
     dispatch(fetchBoard(id));
   }, [dispatch, id]);
+
+  useEffect(() => {
+    if (!board._id) return;
+
+    dispatch(updateRecentBoard({ board }));
+    const handleUpdateRecent = async () => {
+      await UserService.updateRecentBoardAsync(board._id!);
+    };
+
+    handleUpdateRecent()
+  }, [dispatch, board]);
 
   const findColumn = (cardId: any) => {
     return columns?.find((column) =>
@@ -147,15 +163,6 @@ const Board = () => {
     if (!over) return;
 
     if (activeDragItemType === TYPE_ACTIVE_DND.CARD) {
-      console.log(columns);
-
-      console.log({
-        boardId: id,
-        columns: columns
-          ?.find((c) => c.cards.find((card) => card.FE_placeholderCard))
-          ?.cards.filter((card) => !card.FE_placeholderCard),
-      });
-
       try {
         await API.put("/card/updateOrderAndPosition", {
           boardId: id,
@@ -199,55 +206,18 @@ const Board = () => {
   return (
     <div className="flex h-full gap-5">
       <DndContext>
-        {/* Inbox */}
-
-        {/* <div className="h-full bg-blue-100 dark:bg-blue-900 min-w-80 rounded-xl overflow-hidden">
-                    <header className="p-5 bg-blue-50/30 dark:bg-blue-950/50 flex justify-between ">
-                        <div className="flex items-center gap-2">
-                            <Inbox size={18} />
-                            <label className="font-bold">Inbox</label>
-                        </div>
-                        <div className="flex items-center">
-                            <Button size="ic" variant="icon" icon={<Bell size={18} />} />
-                            <Button size="ic" variant="icon" icon={<Filter size={18} />} />
-                            <Button size="ic" variant="icon" icon={<Ellipsis size={18} />} />
-                        </div>
-                    </header>
-                    <div className="w-full">
-                        <DndContext
-                            onDragEnd={HandleDragEnd}
-                            onDragStart={HandleDragStart}
-                            onDragOver={HandleDragOver}
-                            sensors={sensors}
-                            collisionDetection={closestCorners}>
-                            
-                        </DndContext>
-                    </div>
-                </div> */}
-
-        {/* Boards */}
-
         <div
           className="relative flex-1 h-full flex flex-col overflow-hidden bg-cover bg-no-repeat bg-center"
           style={{ backgroundImage: `url('${board?.cover}')` }}
         >
-          <header className="p-5 flex justify-between bg-black/20 text-white">
-            <div className="flex items-center gap-2">
-              <label className="font-bold">{board?.title}</label>
-            </div>
-            <div className="flex items-center">
-              <Button size="ic" variant="icon" icon={<Filter size={18} />} />
-              <Button size="ic" variant="icon" icon={<Star size={18} />} />
-              <Button size="ic" variant="icon" icon={<Ellipsis size={18} />} />
-            </div>
-          </header>
+          <HeaderBoard board={board} />
           <div className="flex-1 relative overflow-x-auto scroll-smooth">
             <DndContext
               onDragEnd={HandleDragEnd}
               onDragStart={HandleDragStart}
               onDragOver={HandleDragOver}
               sensors={sensors}
-              collisionDetection={closestCorners}
+              collisionDetection={customCollisionDetection}
             >
               <ListColumns columns={columns ? columns : []} />
               <DragOverlay dropAnimation={dropAnimation}>
@@ -273,6 +243,76 @@ const Board = () => {
         </div>
       </DndContext>
     </div>
+  );
+};
+
+type props = {
+  board: BoardType;
+};
+
+const HeaderBoard = ({ board }: props) => {
+  const dispatch = useAppDispatch<AppDispatch>();
+  const [openInput, setOpenInput] = useState<boolean>(false);
+  const input = useRef<HTMLInputElement>(null);
+
+  const handleStarred = async (starred: boolean) => {
+    dispatch(updateBoard({ field: "starred", value: starred }));
+    await BoardService.starred(board._id!, starred);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = async (event: MouseEvent) => {
+      if (input.current && !input.current.contains(event.target as Node)) {
+        dispatch(updateBoard({ field: "title", value: input.current.value }));
+        setOpenInput(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dispatch]);
+
+  return (
+    <header className="px-5 py-3 flex justify-between bg-black/20 text-white">
+      <div className="flex items-center gap-2">
+        {!openInput ? (
+          <Button
+            onClick={() => setOpenInput(true)}
+            title={board.title}
+            variant="transparent"
+            className="font-bold"
+          />
+        ) : (
+          <Input
+            ref={input}
+            defaultValue={board.title}
+            variant="borderNone"
+            autoFocus
+          />
+        )}
+      </div>
+      <div className="flex items-center">
+        <Button size="ic" variant="icon" icon={<Filter size={18} />} />
+        {!board.starred ? (
+          <Button
+            onClick={() => handleStarred(true)}
+            size="ic"
+            variant="icon"
+            icon={<IconStar size={18} />}
+          />
+        ) : (
+          <Button
+            onClick={() => handleStarred(false)}
+            size="ic"
+            variant="icon"
+            icon={<IconStarFilled color="yellow" size={18} />}
+          />
+        )}
+        <Button size="ic" variant="icon" icon={<Ellipsis size={18} />} />
+      </div>
+    </header>
   );
 };
 

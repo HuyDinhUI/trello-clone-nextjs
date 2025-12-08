@@ -3,6 +3,8 @@ import { Board, Card, Column } from "@/types/board.type";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { v4 as uuid } from "uuid";
 
+const boards: Board[] = [];
+
 const board: Board = {
   _id: "",
   title: "",
@@ -12,30 +14,53 @@ const board: Board = {
   memberIds: [],
   columns: [],
   columnsOrder: [],
+  starred: false,
 };
 
 const columns: Column[] = [];
 
 export const fetchBoard = createAsyncThunk("board/get", async (id: any) => {
   const res = await BoardService.getBoard(id);
+  console.log(res.data)
   return res.data;
 });
 
 const boardSlice = createSlice({
   name: "board",
   initialState: {
+    boards,
     board,
     columns,
     loading: false,
     error: "",
   },
   reducers: {
+
+    setBoards(state, action) {
+      state.boards = action.payload.data;
+    },
+
+    updateBoards(state, action) {
+      state.boards = state.boards.map((b: Board) =>
+        b._id === action.payload.boardId
+          ? { ...b, [action.payload.field]: action.payload.value }
+          : b
+      );
+    },
+
     //================================================//
-    //================== BOARD =======================//
+    //================== BOARD CURRENT ===============//
     //================================================//
 
     setBoard(state, action) {
-      state.board = action.payload;
+      state.board = action.payload.data;
+    },
+
+    updateBoard(state, action) {
+      state.board = {
+        ...state.board,
+        [action.payload.field]: action.payload.value,
+      };
     },
 
     //=================================================//
@@ -54,6 +79,7 @@ const boardSlice = createSlice({
           title: action.payload.title,
           boardId: action.payload.boardId,
           cards: [],
+          isTemp: true,
         },
       ];
     },
@@ -72,6 +98,14 @@ const boardSlice = createSlice({
     deleteColumn(state, action) {
       state.columns = state.columns.filter(
         (col) => col._id !== action.payload.columnId
+      );
+    },
+
+    asyncIdColumn(state, action) {
+      state.columns = state.columns.map((col) =>
+        col.isTemp && col.isTemp === true
+          ? { ...col, _id: action.payload.id, isTemp: false }
+          : col
       );
     },
 
@@ -97,6 +131,7 @@ const boardSlice = createSlice({
                   checklist: [],
                   joined: [],
                   FE_placeholderCard: false,
+                  isTemp: true,
                 },
               ],
             }
@@ -124,8 +159,21 @@ const boardSlice = createSlice({
         col._id === action.payload.columnId
           ? {
               ...col,
-              cards: col.cards.filter(
-                (c) => c._id !== action.payload.cardId
+              cards: col.cards.filter((c) => c._id !== action.payload.cardId),
+            }
+          : col
+      );
+    },
+
+    asyncIdCard(state, action) {
+      state.columns = state.columns.map((col) =>
+        col._id === action.payload.columnId
+          ? {
+              ...col,
+              cards: col.cards.map((c) =>
+                c.isTemp && c.isTemp === true
+                  ? { ...c, _id: action.payload.id, isTemp: false }
+                  : c
               ),
             }
           : col
@@ -150,14 +198,19 @@ const boardSlice = createSlice({
 });
 
 export const {
+  setBoards,
+  updateBoards,
   setBoard,
+  updateBoard,
   addColumn,
   setColumn,
   editLabel,
   deleteColumn,
+  asyncIdColumn,
   addCard,
   updateCard,
   deleteCard,
+  asyncIdCard,
 } = boardSlice.actions;
 
 export default boardSlice.reducer;

@@ -3,7 +3,6 @@
 import { Button } from "./button";
 import { InputSearch } from "./input";
 import {
-  IconMenu,
   IconHelpCircle,
   IconBell,
   IconSun,
@@ -14,22 +13,21 @@ import { DropdownMenu } from "./dropdown";
 import { useEffect, useState } from "react";
 import AvatarDemo from "./avatar";
 import { Popover } from "./popover";
-import { CreateBoard } from "../create-board";
+import { CreateBoard } from "../boards/create-board";
 import type { MenuItem } from "@/types/menu-item/menu-item-type";
 import { HelpCircle, Settings2 } from "lucide-react";
 import { AlertDialogDelete } from "@/mock/AlertDialog-MockData";
 import API from "@/utils/axios";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/hooks/useAuth";
 import { SkeletonHeader } from "./skeleton";
+import Link from "next/link";
+import Image from "next/image";
+import { useAppSelector } from "@/hooks/useRedux";
+import { RootState } from "@/store";
 
 export const Header = () => {
   const [theme, setTheme] = useState<string | null>("light");
-  const router = useRouter();
-  const { user, loading } = useAuth();
-
-  console.log(user);
+  const {user, loading} = useAppSelector((state: RootState) => state.user)
 
   useEffect(() => {
     const getTheme = () => {
@@ -52,10 +50,10 @@ export const Header = () => {
     try {
       await API.delete("/authorization/logout");
       toast.success("Log out is success");
-      localStorage.removeItem("username");
-      router.push("/auth/login");
+      localStorage.removeItem("persist:root");
+      window.location.href = "/auth/login";
     } catch (error: any) {
-      toast.error(error?.response?.data?.message);
+      console.log(error?.response?.data?.message);
     }
   };
 
@@ -72,12 +70,15 @@ export const Header = () => {
     },
   ];
 
-  if (loading) return<SkeletonHeader/>
+  if (loading) return <SkeletonHeader />;
 
   return (
-    <div className="flex px-3 py-2 items-center">
+    <div className="flex px-5 py-2 items-center border-b border-gray-200">
       <div className="w-[20%]">
-        <IconMenu />
+        <Link className="flex gap-2 items-center" href={"/dashboard/boards"}>
+          <Image src={"/logo.svg"} width={25} height={50} alt=""></Image>
+          <span className="font-bold">Trello</span>
+        </Link>
       </div>
       <div className="flex flex-1 justify-center gap-2">
         <InputSearch />

@@ -141,7 +141,6 @@ export const DropdownMenu = ({
                 ) : (
                   <Dropdown.Item
                     onSelect={(e) => e.preventDefault()}
-                    onClick={item.onClick}
                     key={index}
                     className={clsx(
                       "flex items-center px-2 py-1.5 text-sm cursor-pointer",
@@ -166,9 +165,11 @@ export const DropdownMenu = ({
                     ) : (
                       <Button
                         variant="item"
+                        onClick={item.onClick}
                         icon={item.icon}
                         title={item.label}
                         size="sm"
+                        className="w-full"
                       />
                     )}
 

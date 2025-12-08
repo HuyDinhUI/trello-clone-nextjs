@@ -10,8 +10,8 @@ import {
   Earth,
   Users,
 } from "lucide-react";
-import { Popover } from "./ui/popover";
-import { Button } from "./ui/button";
+import { Popover } from "../ui/popover";
+import { Button } from "../ui/button";
 import API from "@/utils/axios";
 import Image from "next/image";
 
