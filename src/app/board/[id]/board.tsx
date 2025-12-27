@@ -2,7 +2,18 @@
 
 import { ListColumns } from "@/components/boards/columns";
 import { Button } from "@/components/ui/button";
-import { Filter, Ellipsis } from "lucide-react";
+import {
+  Filter,
+  Ellipsis,
+  UserPlus,
+  Info,
+  Users,
+  Share2,
+  Settings,
+  Users2,
+  ListFilter,
+  Minus,
+} from "lucide-react";
 import {
   DndContext,
   useSensor,
@@ -22,7 +33,12 @@ import { toast } from "react-toastify";
 import { useParams } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { AppDispatch, RootState } from "@/store";
-import { fetchBoard, setColumn, updateBoard } from "@/store/boardSlice";
+import {
+  closeBoard,
+  fetchBoard,
+  setColumn,
+  updateBoard,
+} from "@/store/boardSlice";
 import { SkeletonBoardPage } from "@/components/ui/skeleton";
 import { customCollisionDetection } from "@/lib/collisionDetection";
 import { Input } from "@/components/ui/input";
@@ -31,6 +47,10 @@ import { IconStar, IconStarFilled } from "@tabler/icons-react";
 import { BoardService } from "@/services/board.service";
 import { updateRecentBoard } from "@/store/userSlice";
 import { UserService } from "@/services/user.service";
+import { DropdownMenu } from "@/components/ui/dropdown";
+import { MenuItem } from "@/types/menu-item/menu-item-type";
+import { FormChangeVisibility } from "@/components/boards/form-actions";
+import { AlertDialogCloseBoard } from "@/mock/AlertDialog-MockData";
 
 const TYPE_ACTIVE_DND = {
   COLUMN: "T_COLUMN",
@@ -70,7 +90,7 @@ const Board = () => {
       await UserService.updateRecentBoardAsync(board._id!);
     };
 
-    handleUpdateRecent()
+    handleUpdateRecent();
   }, [dispatch, board]);
 
   const findColumn = (cardId: any) => {
@@ -80,7 +100,6 @@ const Board = () => {
   };
 
   const HandleDragStart = (event: any) => {
-    console.log(event);
     setActiveDragItemId(event?.active?.id);
     setActiveDragItemType(
       event?.active?.data?.current?.columnId
@@ -102,8 +121,6 @@ const Board = () => {
       data: { current: activeDrappingCardData },
     } = active;
     const { id: overCardId } = over;
-
-    console.log(over);
 
     const activeColumn = findColumn(activeDrappingCardId);
     const overColumn = findColumn(overCardId);
@@ -144,20 +161,25 @@ const Board = () => {
 
     // thêm card đang kéo vào column được thả vào
     if (nextOverColumn) {
-      // nextOverColumn.card = nextOverColumn.card.filter(card => card.id !== activeDrappingCardId)
+      nextOverColumn.cards = nextOverColumn.cards.filter(
+        (card) => card._id !== activeDrappingCardId
+      );
       nextOverColumn.cards.splice(newCardIndex, 0, activeDrappingCardData);
+      nextOverColumn.cards = nextOverColumn.cards.map((card) =>
+        card._id === activeDrappingCardId
+          ? { ...card, columnId: overColumn._id }
+          : card
+      );
 
       nextOverColumn.cards = nextOverColumn.cards.filter(
         (card) => !card.FE_placeholderCard
       );
     }
-
+    console.log("nextColumns: ", nextColumns);
     dispatch(setColumn(nextColumns));
   };
 
   const HandleDragEnd = async (event: any) => {
-    console.log(event);
-
     const { active, over } = event;
 
     if (!over) return;
@@ -204,7 +226,10 @@ const Board = () => {
   if (loading) return <SkeletonBoardPage />;
 
   return (
-    <div className="flex h-full gap-5">
+    <div className="flex h-full gap-5 relative">
+      {board.close && (
+        <div className="absolute top-0 bottom-0 left-0 right-0 bg-black/50 z-999"></div>
+      )}
       <DndContext>
         <div
           className="relative flex-1 h-full flex flex-col overflow-hidden bg-cover bg-no-repeat bg-center"
@@ -274,8 +299,59 @@ const HeaderBoard = ({ board }: props) => {
     };
   }, [dispatch]);
 
+  const MenuItemBoard: MenuItem[] = [
+    {
+      label: "Share",
+      icon: <UserPlus size={15} />,
+    },
+    { separator: true },
+    {
+      label: "About this board",
+      icon: <Info size={15} />,
+    },
+    {
+      label: `Visibility: ${board.visibility}`,
+      icon: <Users size={15} />,
+    },
+    {
+      label: `Print, export, and share`,
+      icon: <Share2 size={15} />,
+    },
+    {
+      label: !board.starred ? "Star" : "Unstar",
+      icon: !board.starred ? (
+        <IconStar size={15} />
+      ) : (
+        <IconStarFilled size={15} color="#ffb703" />
+      ),
+    },
+    { separator: true },
+    {
+      label: "Setting",
+      icon: <Settings size={15} />,
+    },
+    {
+      label: "Change background",
+      icon: (
+        <div
+          style={{ backgroundImage: `url(${board.cover})` }}
+          className="w-5 h-5 bg-cover rounded-sm"
+        ></div>
+      ),
+    },
+    { separator: true },
+    {
+      label: "Close board",
+      icon: <Minus size={15} />,
+      dialog: AlertDialogCloseBoard,
+      onClick() {
+        dispatch(closeBoard());
+      },
+    },
+  ];
+
   return (
-    <header className="px-5 py-3 flex justify-between bg-black/20 text-white">
+    <header className="px-5 py-3 flex justify-between bg-black/30 text-white">
       <div className="flex items-center gap-2">
         {!openInput ? (
           <Button
@@ -293,8 +369,8 @@ const HeaderBoard = ({ board }: props) => {
           />
         )}
       </div>
-      <div className="flex items-center">
-        <Button size="ic" variant="icon" icon={<Filter size={18} />} />
+      <div className="flex items-center gap-2">
+        <Button size="ic" variant="icon" icon={<ListFilter size={18} />} />
         {!board.starred ? (
           <Button
             onClick={() => handleStarred(true)}
@@ -307,10 +383,23 @@ const HeaderBoard = ({ board }: props) => {
             onClick={() => handleStarred(false)}
             size="ic"
             variant="icon"
-            icon={<IconStarFilled color="yellow" size={18} />}
+            icon={<IconStarFilled color="white" size={18} />}
           />
         )}
-        <Button size="ic" variant="icon" icon={<Ellipsis size={18} />} />
+        <Button icon={<Users2 size={18} />} variant="icon" size="ic" />
+        <Button
+          title="Share"
+          icon={<UserPlus size={18} />}
+          className="text-black"
+          size="sm"
+        />
+        <DropdownMenu
+          trigger={
+            <Button size="ic" variant="icon" icon={<Ellipsis size={18} />} />
+          }
+          items={MenuItemBoard}
+          label="Menu"
+        />
       </div>
     </header>
   );

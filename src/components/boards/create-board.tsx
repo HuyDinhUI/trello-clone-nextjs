@@ -91,8 +91,7 @@ export const CreateBoard = () => {
     };
 
     const res = await API.post("/boards", data);
-    // navigate(`/b/${res.data.newData._id}/${res.data.newData.title}`)
-    window.location.href = `/board/${res.data.newData._id}`;
+    window.location.href = `/board/${res.data.board._id}`;
   };
   return (
     <div className="w-[300px] p-1 dark:text-white">
@@ -140,7 +139,7 @@ export const CreateBoard = () => {
                 </button>
               </li>
             ))}
-            <li className="h-[32px]">
+            <li className="h-8">
               <button className="cursor-pointer flex rounded-[3px] justify-center items-center bg-gray-100 dark:text-black h-full w-full">
                 <span>
                   <Ellipsis size={15} />

@@ -14,7 +14,7 @@ const sidebarItems: SidebarItem[] = [
     type: 'item',
     label: "Template",
     icon: <LayoutDashboard size={18} />,
-    href: "/templates",
+    href: "/dashboard/templates",
     subItems: [
       { type: 'item', label: "Business", href: "#", },
       { type: 'item', label: "Design", href: "#", },
@@ -32,7 +32,7 @@ const sidebarItems: SidebarItem[] = [
       { type: 'item', label: "Team management", href: "#", },
     ]
   },
-  { type: 'item', label: "Home", icon: <Home size={18} />, href: "/" },
+  { type: 'item', label: "Home", icon: <Home size={18} />, href: "/dashboard/home" },
   { type: 'separator' },
   { type: 'separator', label: 'Workspaces' },
   {
@@ -51,7 +51,7 @@ const sidebarItems: SidebarItem[] = [
 const MainLayout = ({ children }: Props) => {
 
   return (
-    <div className="wrapper dark:bg-background">
+    <div className="wrapper dark:bg-black">
       <Header />
       <div className="flex overflow-y-scroll max-h-[90vh] pt-5">
         <Sidebar items={sidebarItems} />

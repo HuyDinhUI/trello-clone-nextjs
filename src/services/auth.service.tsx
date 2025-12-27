@@ -1,19 +1,30 @@
+import { LoginBody, RegisterBody } from "@/types/auth.type";
 import API from "@/utils/axios"
 
-export const AuthService = {
-    Login (data: any) {
-        return API.post('/authorization/login',data)
-    },
+interface IAuth {
+    login (data: LoginBody): Promise<any>
+    register (data: RegisterBody): Promise<any>
+    logout (): Promise<any>
+    refreshToken (): Promise<any>
+}
 
-    Logout () {
-        return API.delete('/authorization/logout')
-    },
+class Auth implements IAuth {
+    
+    login (data: LoginBody) {
+        return API.post('/authorization/login', data)
+    }
 
-    Signup (data: any) {
-        return API.post('/authorization.signup', data)
-    },
+    register (data: RegisterBody) {
+        return API.post('authorization/register', data)
+    }
 
-    RefreshToken () {
-        return API.put('/authorization/resfresh_token')
+    logout () {
+        return API.delete('authorization/logout')
+    }
+
+    refreshToken () {
+        return API.put('authorization/refresh_token')
     }
 }
+
+export const AuthSevices = new Auth()

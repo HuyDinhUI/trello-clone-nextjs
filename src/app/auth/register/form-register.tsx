@@ -1,38 +1,41 @@
 "use client";
 
 import { Controller, useForm } from "react-hook-form";
+import API from "@/utils/axios";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AlertDanger } from "@/components/ui/alert";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { GoogleIcon } from "@/assets/icons";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginValidation } from "@/validators/auth.validator";
+import { RegisterValidation } from "@/validators/auth.validator";
 import FieldError from "@/components/ui/field-error";
 import { FieldLabel } from "@/components/ui/field-label";
-import { AuthSevices } from "@/services/auth.service";
-import { LoginBody } from "@/types/auth.type";
+import { RegisterBody } from "@/types/auth.type";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
-const FormLogin = () => {
-  const form = useForm<z.infer<typeof LoginValidation>>({
-    resolver: zodResolver(LoginValidation),
+const FormRegister = () => {
+  const form = useForm<z.infer<typeof RegisterValidation>>({
+    resolver: zodResolver(RegisterValidation),
     defaultValues: {
+      username: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
   });
-  const router = useRouter();
   const [error, setError] = useState(undefined);
-
-  const submitLogin = async (data: LoginBody) => {
+  const router = useRouter();
+  const submitLogin = async (data: RegisterBody) => {
     try {
-      const res = await AuthSevices.login(data)
-      if (res.data.role === "customer") {
-        router.push("/dashboard/boards");
-      }
+      await API.post("/authorization/register", data);
+      toast.success("Register is success", {
+        theme: "light",
+      });
+      router.push("/auth/login");
     } catch (error: any) {
       setError(error.response?.data?.message);
     }
@@ -40,11 +43,34 @@ const FormLogin = () => {
 
   return (
     <form className="w-full p-10" onSubmit={form.handleSubmit(submitLogin)}>
-      <div className="text-center mb-5">
-        <h1 className="font-bold text-2xl">Welcome back</h1>
-        <p className="font-light">Login to your trello account</p>
+      <div className="text-left mb-5">
+        <h1 className="font-bold text-2xl">Welcome to Trello</h1>
+        <p className="font-light">Register to your trello account</p>
       </div>
       {error && <AlertDanger title={error} />}
+
+      <Controller
+        name="username"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <div className="grid gap-2 mb-5">
+            <FieldLabel data-invalid={fieldState.invalid} htmlFor={field.name}>
+              Username
+            </FieldLabel>
+            <Input
+              {...field}
+              aria-invalid={fieldState.invalid}
+              id={field.name}
+              type="text"
+              placeholder="huydinh123"
+              autoComplete="username"
+            />
+            {fieldState.invalid && (
+              <FieldError message={fieldState.error?.message ?? ""} />
+            )}
+          </div>
+        )}
+      ></Controller>
 
       <Controller
         name="email"
@@ -84,9 +110,28 @@ const FormLogin = () => {
               type="password"
               autoComplete="password"
             />
-            <Link className="absolute top-1 right-0 text-sm hover:underline" href={"/restpassword"}>
-              Forgot your password?
-            </Link>
+            {fieldState.invalid && (
+              <FieldError message={fieldState.error?.message ?? ""} />
+            )}
+          </div>
+        )}
+      ></Controller>
+
+      <Controller
+        name="confirmPassword"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <div className="grid gap-2 mb-5 relative">
+            <FieldLabel data-invalid={fieldState.invalid} htmlFor={field.name}>
+              Confirm password
+            </FieldLabel>
+            <Input
+              {...field}
+              aria-invalid={fieldState.invalid}
+              id={field.name}
+              type="password"
+              autoComplete="password"
+            />
             {fieldState.invalid && (
               <FieldError message={fieldState.error?.message ?? ""} />
             )}
@@ -118,9 +163,9 @@ const FormLogin = () => {
           />
         </div>
         <p className="text-center">
-          {`Don't have an account?`}{" "}
-          <Link className="underline" href={"register"}>
-            Sign up
+          {`Do you have an account?`}{" "}
+          <Link className="underline" href={"login"}>
+            Login
           </Link>
         </p>
       </div>
@@ -128,4 +173,4 @@ const FormLogin = () => {
   );
 };
 
-export default FormLogin;
+export default FormRegister;

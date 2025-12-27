@@ -93,18 +93,14 @@ export const Column = ({
       columnId: id,
     };
 
-    try {
-      const res = await CardService.createCard(data);
-      dispatch(asyncIdCard({ id: res.data._id, columnId: id }));
-    } catch {}
+    const res = await CardService.createCard(data);
+    dispatch(asyncIdCard({ id: res.data._id, columnId: id }));
   };
 
   const handleDeleteColumn = async () => {
     dispatch(deleteColumn({ columnId: id }));
 
-    try {
-      await ColumnService.deleteColumn(id);
-    } catch {}
+    await ColumnService.deleteColumn(id);
   };
 
   const ActionsBoardItems: MenuItem[] = [
@@ -182,7 +178,7 @@ export const Column = ({
         <div className="pb-15 px-3 overflow-y-auto max-h-[70vh]">
           {children}
           {openCreate && (
-            <div className="mt-5">
+            <div className="mt-5" autoFocus>
               <textarea
                 onChange={(e) => setLabelInputCard(e.target.value)}
                 autoFocus

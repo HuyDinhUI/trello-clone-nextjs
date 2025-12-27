@@ -1,4 +1,5 @@
 "use client";
+
 import { useDebounce } from "@/hooks/useDebounce";
 import { useAppSelector } from "@/hooks/useRedux";
 import { BoardService } from "@/services/board.service";
@@ -79,7 +80,7 @@ export const InputSearch = () => {
                 </Link>
               ))}
 
-            {boards &&
+            {keyword && boards &&
               boards.map((b) => (
                 <Link
                   href={`/board/${b._id}`}
@@ -132,7 +133,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     { placeholder, variant = "default", sizeOpt = "md", className, ...rest },
     ref
   ) => {
-    const base = "w-full rounded-sm";
+    const base = "w-full rounded-sm aria-invalid:ring-red-500 aria-invalid:outline-red-500";
     const finalClass = `${base} ${variantClass[variant]} ${sizeClass[sizeOpt]} ${className}`;
 
     return (

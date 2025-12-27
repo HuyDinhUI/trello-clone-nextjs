@@ -16,7 +16,7 @@ import { Popover } from "./popover";
 import { CreateBoard } from "../boards/create-board";
 import type { MenuItem } from "@/types/menu-item/menu-item-type";
 import { HelpCircle, Settings2 } from "lucide-react";
-import { AlertDialogDelete } from "@/mock/AlertDialog-MockData";
+import { AlertDialogLogout } from "@/mock/AlertDialog-MockData";
 import API from "@/utils/axios";
 import { toast } from "react-toastify";
 import { SkeletonHeader } from "./skeleton";
@@ -27,7 +27,7 @@ import { RootState } from "@/store";
 
 export const Header = () => {
   const [theme, setTheme] = useState<string | null>("light");
-  const {user, loading} = useAppSelector((state: RootState) => state.user)
+  const { user, loading } = useAppSelector((state: RootState) => state.user);
 
   useEffect(() => {
     const getTheme = () => {
@@ -49,7 +49,6 @@ export const Header = () => {
   const Logout = async () => {
     try {
       await API.delete("/authorization/logout");
-      toast.success("Log out is success");
       localStorage.removeItem("persist:root");
       window.location.href = "/auth/login";
     } catch (error: any) {
@@ -66,7 +65,7 @@ export const Header = () => {
       label: "Logout",
       icon: <IconLogout size={16} />,
       onClick: () => Logout(),
-      dialog: AlertDialogDelete,
+      dialog: AlertDialogLogout,
     },
   ];
 

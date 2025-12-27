@@ -30,8 +30,6 @@ type CardDetailProps = {
 
 export const CardDetail = ({ data }: CardDetailProps) => {
   const [isOpenForm, setIsOpenForm] = useState<boolean>(false);
-  const [isInit, setIsInit] = useState(true);
-  const updateTimer = useRef<any>(null);
   const dispatch = useAppDispatch<AppDispatch>();
 
   const handleUpdateCard = async (

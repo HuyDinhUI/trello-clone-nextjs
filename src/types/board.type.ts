@@ -10,6 +10,7 @@ export interface Board {
   columns: string[];
   columnsOrder: Column[];
   starred: boolean
+  close: boolean
 }
 
 export interface Column {

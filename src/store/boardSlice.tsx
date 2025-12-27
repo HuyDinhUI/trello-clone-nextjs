@@ -15,6 +15,7 @@ const board: Board = {
   columns: [],
   columnsOrder: [],
   starred: false,
+  close: false
 };
 
 const columns: Column[] = [];
@@ -62,6 +63,14 @@ const boardSlice = createSlice({
         [action.payload.field]: action.payload.value,
       };
     },
+
+    closeBoard(state) {
+      state.board = {
+        ...state.board,
+        close: true
+      }
+    },
+
 
     //=================================================//
     //================== COLUMN =======================//
@@ -200,6 +209,7 @@ const boardSlice = createSlice({
 export const {
   setBoards,
   updateBoards,
+  closeBoard,
   setBoard,
   updateBoard,
   addColumn,
