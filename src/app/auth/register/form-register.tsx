@@ -1,7 +1,6 @@
 "use client";
 
 import { Controller, useForm } from "react-hook-form";
-import API from "@/utils/axios";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -16,6 +15,7 @@ import { FieldLabel } from "@/components/ui/field-label";
 import { RegisterBody } from "@/types/auth.type";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { AuthSevices } from "@/services/auth-service";
 
 const FormRegister = () => {
   const form = useForm<z.infer<typeof RegisterValidation>>({
@@ -31,7 +31,7 @@ const FormRegister = () => {
   const router = useRouter();
   const submitLogin = async (data: RegisterBody) => {
     try {
-      await API.post("/authorization/register", data);
+      await AuthSevices.register(data)
       toast.success("Register is success", {
         theme: "light",
       });

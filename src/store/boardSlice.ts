@@ -1,4 +1,4 @@
-import { BoardService } from "@/services/board.service";
+import { BoardService } from "@/services/board-service";
 import { Board, Card, Column } from "@/types/board.type";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { v4 as uuid } from "uuid";
@@ -15,14 +15,14 @@ const board: Board = {
   columns: [],
   columnsOrder: [],
   starred: false,
-  close: false
+  closed: false,
+  dateLastView: ""
 };
 
 const columns: Column[] = [];
 
 export const fetchBoard = createAsyncThunk("board/get", async (id: any) => {
   const res = await BoardService.getBoard(id);
-  console.log(res.data)
   return res.data;
 });
 
@@ -67,7 +67,7 @@ const boardSlice = createSlice({
     closeBoard(state) {
       state.board = {
         ...state.board,
-        close: true
+        closed: true
       }
     },
 

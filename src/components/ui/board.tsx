@@ -4,7 +4,7 @@ import { type ReactNode } from "react";
 import { IconStar, IconStarFilled } from "@tabler/icons-react";
 import Link from "next/link";
 import { Board } from "@/types/board.type";
-import { BoardService } from "@/services/board.service";
+import { BoardService } from "@/services/board-service";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { AppDispatch } from "@/store";
 import { updateBoards } from "@/store/boardSlice";
@@ -49,7 +49,7 @@ export const BoardItem = ({ type, board }: BoardItemProps) => {
                   e.preventDefault();
                   e.stopPropagation();
                 }}
-                className={`absolute top-2 right-2 bg-black/20 rounded p-1 text-white duration-300 transition-transform  delay-300 ${
+                className={`absolute top-2 right-2 bg-black/20 rounded p-1 text-white duration-300 transition-transform  delay-100 ${
                   board.starred
                     ? "opacity-100 translate-x-0"
                     : "group-hover:opacity-100 translate-x-10 group-hover:translate-x-0"

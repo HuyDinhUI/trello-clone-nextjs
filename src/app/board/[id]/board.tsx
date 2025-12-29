@@ -3,7 +3,6 @@
 import { ListColumns } from "@/components/boards/columns";
 import { Button } from "@/components/ui/button";
 import {
-  Filter,
   Ellipsis,
   UserPlus,
   Info,
@@ -44,12 +43,12 @@ import { customCollisionDetection } from "@/lib/collisionDetection";
 import { Input } from "@/components/ui/input";
 import { Board as BoardType } from "@/types/board.type";
 import { IconStar, IconStarFilled } from "@tabler/icons-react";
-import { BoardService } from "@/services/board.service";
+import { BoardService } from "@/services/board-service";
 import { updateRecentBoard } from "@/store/userSlice";
-import { UserService } from "@/services/user.service";
+import { UserService } from "@/services/user-service";
 import { DropdownMenu } from "@/components/ui/dropdown";
 import { MenuItem } from "@/types/menu-item/menu-item-type";
-import { FormChangeVisibility } from "@/components/boards/form-actions";
+import { FormChangeCover, FormChangeVisibility } from "@/components/boards/form-actions";
 import { AlertDialogCloseBoard } from "@/mock/AlertDialog-MockData";
 
 const TYPE_ACTIVE_DND = {
@@ -227,7 +226,7 @@ const Board = () => {
 
   return (
     <div className="flex h-full gap-5 relative">
-      {board.close && (
+      {board.closed && (
         <div className="absolute top-0 bottom-0 left-0 right-0 bg-black/50 z-999"></div>
       )}
       <DndContext>
@@ -303,19 +302,23 @@ const HeaderBoard = ({ board }: props) => {
     {
       label: "Share",
       icon: <UserPlus size={15} />,
+      disabled: true
     },
     { separator: true },
     {
       label: "About this board",
       icon: <Info size={15} />,
+      disabled: true
     },
     {
       label: `Visibility: ${board.visibility}`,
       icon: <Users size={15} />,
+      elementPopup: <FormChangeVisibility/>
     },
     {
       label: `Print, export, and share`,
       icon: <Share2 size={15} />,
+      disabled: true
     },
     {
       label: !board.starred ? "Star" : "Unstar",
@@ -324,11 +327,15 @@ const HeaderBoard = ({ board }: props) => {
       ) : (
         <IconStarFilled size={15} color="#ffb703" />
       ),
+      onClick() {
+        handleStarred(!board.starred)
+      },
     },
     { separator: true },
     {
       label: "Setting",
       icon: <Settings size={15} />,
+      disabled: true
     },
     {
       label: "Change background",
@@ -338,6 +345,7 @@ const HeaderBoard = ({ board }: props) => {
           className="w-5 h-5 bg-cover rounded-sm"
         ></div>
       ),
+      elementPopup: <FormChangeCover/>
     },
     { separator: true },
     {

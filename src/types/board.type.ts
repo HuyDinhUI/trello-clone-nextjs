@@ -10,7 +10,8 @@ export interface Board {
   columns: string[];
   columnsOrder: Column[];
   starred: boolean
-  close: boolean
+  closed: boolean
+  dateLastView: string
 }
 
 export interface Column {

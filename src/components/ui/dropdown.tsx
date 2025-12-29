@@ -92,6 +92,44 @@ export const DropdownMenu = ({
               );
             }
 
+            if (item.element) {
+              return (
+                <Dropdown.Item onSelect={(e) => e.preventDefault()} key={index}>
+                  <div className="p-2 min-h-50">{item.element}</div>
+                </Dropdown.Item>
+              );
+            }
+
+            if (item.elementPopup) {
+              return (
+                <Dropdown.Sub key={index}>
+                  <Dropdown.SubTrigger
+                    className={clsx(
+                      "flex items-center justify-between px-2 py-1.5 text-sm hover:bg-gray-100 dark:hover:bg-gray-700",
+                      item.disabled && "opacity-50 pointer-events-none"
+                    )}
+                  >
+                    <Button
+                      variant="item"
+                      icon={item.icon}
+                      title={item.label}
+                      size="sm"
+                    />
+                    <ChevronRight size={14} />
+                  </Dropdown.SubTrigger>
+
+                  <Dropdown.Portal>
+                    <Dropdown.SubContent
+                      sideOffset={6}
+                      className="min-w-60 rounded bg-white dark:bg-gray-800 shadow-lg"
+                    >
+                      {item.elementPopup}
+                    </Dropdown.SubContent>
+                  </Dropdown.Portal>
+                </Dropdown.Sub>
+              );
+            }
+
             return (
               <div key={index}>
                 {item.children ? (
@@ -136,7 +174,6 @@ export const DropdownMenu = ({
                         {item.shortcut}
                       </span>
                     )}
-                    {item.element && <div>{item.element}</div>}
                   </Dropdown.Item>
                 ) : (
                   <Dropdown.Item
@@ -144,7 +181,9 @@ export const DropdownMenu = ({
                     key={index}
                     className={clsx(
                       "flex items-center px-2 py-1.5 text-sm cursor-pointer",
-                      item.disabled && "opacity-50 pointer-events-none", !item.element && "hover:bg-gray-100 dark:hover:bg-gray-700"
+                      item.disabled && "opacity-50 pointer-events-none",
+                      !item.element &&
+                        "hover:bg-gray-100 dark:hover:bg-gray-700"
                     )}
                   >
                     {item.dialog ? (
@@ -178,7 +217,6 @@ export const DropdownMenu = ({
                         {item.shortcut}
                       </span>
                     )}
-                    {item.element && <div className="min-h-30">{item.element}</div>}
                   </Dropdown.Item>
                 )}
               </div>

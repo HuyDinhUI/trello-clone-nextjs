@@ -1,4 +1,3 @@
-"use client";
 
 import { Header } from "@/components/ui/header";
 import type { ReactNode } from "react";

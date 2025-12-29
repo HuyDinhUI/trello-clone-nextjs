@@ -48,10 +48,14 @@ const Boards = ({ data }: props) => {
       )}
       {/* Viewed */}
       {user.recentBoards?.length > 0 && (
-        <BoardContainer icon={<Clock/>} title="Recently viewed">
-          {user.recentBoards.map((b) => (
-            <BoardItem board={b.board} key={b.board._id} type="primary" />
-          ))}
+        <BoardContainer icon={<Clock />} title="Recently viewed">
+          {boards
+            .filter((b) =>
+              new Set(user.recentBoards.map((b) => b.board._id)).has(b._id)
+            )
+            .map((b: Board) => (
+              <BoardItem board={b} key={b._id} type="primary" />
+            ))}
         </BoardContainer>
       )}
       {/* Your Workspace */}
@@ -76,12 +80,6 @@ const Boards = ({ data }: props) => {
           </Popover>
         </BoardContainer>
       </BoardWorkspace>
-      {/* Guest Workspace */}
-      {/* <BoardWorkspace label="guest workspace" icon={<Info size={18} />}>
-                <BoardContainer icon={<ChartColumnBig />} title="Trello Templates">
-                    <Board type="primary" title="My trello board" img={'https://d2k1ftgv7pobq7.cloudfront.net/images/backgrounds/gradients/rainbow.svg'} />
-                </BoardContainer>
-            </BoardWorkspace> */}
     </div>
   );
 };

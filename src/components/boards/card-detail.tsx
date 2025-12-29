@@ -1,19 +1,10 @@
 "use client";
 
 import CheckboxDemo from "../ui/checkbox";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Popover } from "../ui/popover";
 import { Button } from "../ui/button";
-import {
-  Clock,
-  Ellipsis,
-  Image as Img,
-  Plus,
-  SquareCheckBig,
-  Tag,
-  TextAlignStart,
-  UserPlus,
-} from "lucide-react";
+import { Ellipsis, Image as Img, TextAlignStart } from "lucide-react";
 import { COVER_COLOR, COVER_PHOTOS } from "@/mock/cover-data";
 import Image from "next/image";
 import "quill/dist/quill.snow.css";
@@ -21,8 +12,15 @@ import Editor from "../ui/editor";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { AppDispatch } from "@/store";
 import { updateCard } from "@/store/boardSlice";
-import { CardService } from "@/services/card.service";
+import { CardService } from "@/services/card-service";
 import { Card } from "@/types/board.type";
+import {
+  AddToCard,
+  CardLabel,
+  CardChecklist,
+  CardAttechment,
+  CardDate,
+} from "@/components/popover-action/actions-card/index";
 
 type CardDetailProps = {
   data: Card;
@@ -39,8 +37,6 @@ export const CardDetail = ({ data }: CardDetailProps) => {
     value: any
   ) => {
     const newData = { ...data, [field]: value };
-    console.log(field);
-    console.log(value);
     dispatch(updateCard({ columnId, cardId, field, value }));
 
     try {
@@ -154,12 +150,6 @@ export const CardDetail = ({ data }: CardDetailProps) => {
           <div className="px-5 pt-5 flex items-center gap-5">
             <CheckboxDemo
               onCheckedChange={(checked) =>
-                // dispatch({
-                //   type: "UPDATE_FIELD",
-                //   value: checked === true,
-                //   field: "status",
-                // })
-
                 handleUpdateCard(
                   data.columnId,
                   data._id,
@@ -175,66 +165,11 @@ export const CardDetail = ({ data }: CardDetailProps) => {
           <div className="px-5 flex gap-5">
             <div className="w-5"></div>
             <div className="flex gap-2 items-center">
-              <Popover
-                trigger={
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    title="Add"
-                    icon={<Plus size={18} />}
-                  />
-                }
-              >
-                <div></div>
-              </Popover>
-              <Popover
-                trigger={
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    title="Label"
-                    icon={<Tag size={18} />}
-                  />
-                }
-              >
-                <div></div>
-              </Popover>
-              <Popover
-                trigger={
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    title="Dates"
-                    icon={<Clock size={18} />}
-                  />
-                }
-              >
-                <div></div>
-              </Popover>
-              <Popover
-                trigger={
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    title="Checklists"
-                    icon={<SquareCheckBig size={18} />}
-                  />
-                }
-              >
-                <div></div>
-              </Popover>
-              <Popover
-                trigger={
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    title="Members"
-                    icon={<UserPlus size={18} />}
-                  />
-                }
-              >
-                <div></div>
-              </Popover>
+              <AddToCard/>
+              <CardLabel/>
+              <CardDate/>
+              <CardChecklist/>
+              <CardAttechment/>
             </div>
           </div>
           {/* description */}

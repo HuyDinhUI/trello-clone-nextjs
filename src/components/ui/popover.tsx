@@ -2,6 +2,7 @@
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import clsx from "clsx";
 import { X } from "lucide-react"
+import { useState } from "react";
 
 type PopoverProps = {
   trigger: React.ReactNode;
@@ -20,8 +21,11 @@ export const Popover = ({
   align = "center",
   sideOffset = 8,
 }: PopoverProps) => {
+
+  const [open, setOpen] = useState(false);
+
   return (
-    <PopoverPrimitive.Root>
+    <PopoverPrimitive.Root open={open} onOpenChange={setOpen}>
       <PopoverPrimitive.Trigger asChild>
         {trigger}
       </PopoverPrimitive.Trigger>

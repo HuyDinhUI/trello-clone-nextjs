@@ -1,4 +1,4 @@
-import { UserService } from "@/services/user.service";
+import { UserService } from "@/services/user-service";
 import { User } from "@/types/user.type";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 

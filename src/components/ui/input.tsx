@@ -2,7 +2,7 @@
 
 import { useDebounce } from "@/hooks/useDebounce";
 import { useAppSelector } from "@/hooks/useRedux";
-import { BoardService } from "@/services/board.service";
+import { BoardService } from "@/services/board-service";
 import { RootState } from "@/store";
 import { Board } from "@/types/board.type";
 import { IconSearch } from "@tabler/icons-react";

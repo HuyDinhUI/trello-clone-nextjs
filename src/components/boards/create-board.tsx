@@ -81,7 +81,6 @@ export const CreateBoard = () => {
   const [selected, setSelected] = useState(listBackgroundImg[0].img);
   const [visibility, setVisibility] = useState("workspace");
   const [title, setTitle] = useState<string>();
-  // const navigate = useNavigate()
 
   const submit = async () => {
     const data = {
@@ -91,6 +90,7 @@ export const CreateBoard = () => {
     };
 
     const res = await API.post("/boards", data);
+    console.log(res.data)
     window.location.href = `/board/${res.data.board._id}`;
   };
   return (
@@ -154,7 +154,7 @@ export const CreateBoard = () => {
           <div className="grid gap-2">
             <label>Board title</label>
             <input
-              className="invalid:ring-pink-500 invalid:text-pink-600 peer ... ring ring-gray-400 rounded-[3px] p-2"
+              className="invalid:ring-pink-500 invalid:text-pink-600 peer ring ring-gray-400 rounded-[3px] p-2"
               id="title"
               required
               onChange={(e) => setTitle(e.target.value)}

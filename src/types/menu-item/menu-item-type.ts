@@ -11,5 +11,6 @@ export type MenuItem =
     onClick?: () => void;
     children?: MenuItem[];
     element?: ReactNode
+    elementPopup?: ReactNode 
   }
   | { separator: true };

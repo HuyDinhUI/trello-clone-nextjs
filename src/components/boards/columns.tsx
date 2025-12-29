@@ -11,8 +11,8 @@ import { Button } from "../ui/button";
 import { DropdownMenu } from "../ui/dropdown";
 import type { MenuItem } from "@/types/menu-item/menu-item-type";
 import { Card, Column as ColumnType } from "@/types/board.type";
-import { useAppDispatch } from "@/hooks/useRedux";
-import { AppDispatch } from "@/store";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { AppDispatch, RootState } from "@/store";
 import {
   addCard,
   addColumn,
@@ -21,8 +21,8 @@ import {
   deleteColumn,
   editLabel,
 } from "@/store/boardSlice";
-import { ColumnService } from "@/services/column.service";
-import { CardService } from "@/services/card.service";
+import { ColumnService } from "@/services/column-service";
+import { CardService } from "@/services/card-service";
 
 type ColummsProps = {
   label: string;
@@ -110,9 +110,9 @@ export const Column = ({
         setOpenCreate(true);
       },
     },
-    { label: "Copy list" },
-    { label: "Move list" },
-    { label: "Move all card in this list" },
+    { label: "Copy list", disabled: true },
+    { label: "Move list", disabled: true },
+    { label: "Move all card in this list", disabled: true },
     {
       label: "Sort by",
       children: [
@@ -228,15 +228,16 @@ export const ListColumns = ({ columns }: ListColumnsProps) => {
   const [openCreate, setOpenCreate] = useState(false);
   const [title, setTitle] = useState<string>("");
   const dispatch = useAppDispatch<AppDispatch>();
+  const { board } = useAppSelector((state: RootState) => state.board);
 
   const handleAddColumn = async () => {
-    dispatch(addColumn({ title, boardId: columns[0].boardId }));
+    dispatch(addColumn({ title, boardId: board._id }));
     setTitle("");
     setOpenCreate(false);
 
     const data = {
       title,
-      boardId: columns[0].boardId,
+      boardId: board._id,
       cards: [],
     };
     try {

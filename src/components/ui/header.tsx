@@ -18,7 +18,6 @@ import type { MenuItem } from "@/types/menu-item/menu-item-type";
 import { HelpCircle, Settings2 } from "lucide-react";
 import { AlertDialogLogout } from "@/mock/AlertDialog-MockData";
 import API from "@/utils/axios";
-import { toast } from "react-toastify";
 import { SkeletonHeader } from "./skeleton";
 import Link from "next/link";
 import Image from "next/image";

@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginValidation } from "@/validators/auth.validator";
 import FieldError from "@/components/ui/field-error";
 import { FieldLabel } from "@/components/ui/field-label";
-import { AuthSevices } from "@/services/auth.service";
+import { AuthSevices } from "@/services/auth-service";
 import { LoginBody } from "@/types/auth.type";
 
 const FormLogin = () => {

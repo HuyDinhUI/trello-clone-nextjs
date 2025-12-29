@@ -14,7 +14,7 @@ import { CardDetail } from "./card-detail";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { AppDispatch } from "@/store";
 import { deleteCard, updateCard } from "@/store/boardSlice";
-import { CardService } from "@/services/card.service";
+import { CardService } from "@/services/card-service";
 import { Card as CardType } from "@/types/board.type";
 
 type CardProps = {
