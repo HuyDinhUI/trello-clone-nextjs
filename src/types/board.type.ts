@@ -1,7 +1,11 @@
+import { EntityId } from "@reduxjs/toolkit";
 import { User } from "./user.type";
 
-export interface Board {
-  _id: string | null;
+interface MongoEntity {
+  _id: EntityId
+}
+
+export interface Board extends MongoEntity {
   title: string;
   cover: string;
   visibility: string;
@@ -14,10 +18,9 @@ export interface Board {
   dateLastView: string
 }
 
-export interface Column {
-  _id: string;
+export interface Column extends MongoEntity {
   title: string;
-  boardId: string;
+  boardId: EntityId;
   cards: Card[];
   isTemp?: boolean
 }
@@ -27,11 +30,10 @@ type checklist = {
   checked: boolean;
 };
 
-export interface Card {
-  _id: string;
+export interface Card extends MongoEntity {
   label: string;
   status: boolean;
-  columnId: string;
+  columnId: EntityId;
   cover: string;
   description: string;
   attachments: string[];

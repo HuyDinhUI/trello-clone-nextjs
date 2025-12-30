@@ -11,24 +11,16 @@ import { Button } from "../ui/button";
 import { DropdownMenu } from "../ui/dropdown";
 import type { MenuItem } from "@/types/menu-item/menu-item-type";
 import { Card, Column as ColumnType } from "@/types/board.type";
-import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
-import { AppDispatch, RootState } from "@/store";
-import {
-  addCard,
-  addColumn,
-  asyncIdCard,
-  asyncIdColumn,
-  deleteColumn,
-  editLabel,
-} from "@/store/boardSlice";
-import { ColumnService } from "@/services/column-service";
-import { CardService } from "@/services/card-service";
+import { useAppSelector } from "@/hooks/useRedux";
+import { RootState } from "@/store";
+import { EntityId } from "@reduxjs/toolkit";
+import { ColumnFacade } from "@/app/facades/column.facade";
+import { CardFacade } from "@/app/facades/card.facade";
 
 type ColummsProps = {
   label: string;
   children: ReactNode;
-  id: string;
-  boardId: string;
+  id: EntityId;
   card: Card[];
 };
 
@@ -37,12 +29,11 @@ export const Column = ({
   children,
   id,
   card,
-  boardId,
 }: ColummsProps) => {
   const [openCreate, setOpenCreate] = useState(false);
   const [openEditLabel, setOpenEditLabel] = useState(false);
+  const [labelInputCard, setLabelInputCard] = useState<string>("");
   const input = useRef<HTMLTextAreaElement>(null);
-  const dispatch = useAppDispatch<AppDispatch>();
 
   const {
     attributes,
@@ -60,20 +51,11 @@ export const Column = ({
     opacity: isDragging ? 0.5 : undefined,
   };
 
-  const [labelInputCard, setLabelInputCard] = useState<string>("");
-
   useEffect(() => {
     const handleClickOutside = async (event: MouseEvent) => {
       if (input.current && !input.current.contains(event.target as Node)) {
-        dispatch(editLabel({ columnId: id, value: input.current.value }));
+        ColumnFacade.update(id, input.current.value);
         setOpenEditLabel(false);
-
-        const data = {
-          title: input.current.value,
-          columnId: id,
-        };
-
-        await ColumnService.updateColumn(data);
       }
     };
 
@@ -81,26 +63,15 @@ export const Column = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [dispatch, id]);
+  }, [id]);
 
   const handleCreateCard = async () => {
-    dispatch(addCard({ label: labelInputCard, columnId: id }));
+    CardFacade.add(labelInputCard, id)
     setLabelInputCard("");
-    setOpenCreate(false);
-
-    const data = {
-      label: labelInputCard,
-      columnId: id,
-    };
-
-    const res = await CardService.createCard(data);
-    dispatch(asyncIdCard({ id: res.data._id, columnId: id }));
   };
 
   const handleDeleteColumn = async () => {
-    dispatch(deleteColumn({ columnId: id }));
-
-    await ColumnService.deleteColumn(id);
+    ColumnFacade.delete(id)
   };
 
   const ActionsBoardItems: MenuItem[] = [
@@ -227,24 +198,12 @@ type ListColumnsProps = {
 export const ListColumns = ({ columns }: ListColumnsProps) => {
   const [openCreate, setOpenCreate] = useState(false);
   const [title, setTitle] = useState<string>("");
-  const dispatch = useAppDispatch<AppDispatch>();
-  const { board } = useAppSelector((state: RootState) => state.board);
+  const { currenBoardId } = useAppSelector((state: RootState) => state.board);
 
   const handleAddColumn = async () => {
-    dispatch(addColumn({ title, boardId: board._id }));
+    ColumnFacade.add(title, currenBoardId!);
     setTitle("");
     setOpenCreate(false);
-
-    const data = {
-      title,
-      boardId: board._id,
-      cards: [],
-    };
-    try {
-      const res = await ColumnService.createColumn(data);
-      console.log(res.data);
-      dispatch(asyncIdColumn({ id: res.data._id }));
-    } catch {}
   };
 
   return (
@@ -259,7 +218,6 @@ export const ListColumns = ({ columns }: ListColumnsProps) => {
             id={col._id}
             label={col.title}
             card={col.cards}
-            boardId={col.boardId}
           >
             <ListCard items={col.cards} />
           </Column>

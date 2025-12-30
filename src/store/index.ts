@@ -1,5 +1,5 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import boardReducer from "./boardSlice";
+import boardReducer from "./board/board.slice";
 import userReducer from "./userSlice";
 import storage from "redux-persist/lib/storage";
 import {

@@ -11,17 +11,19 @@ import CheckboxDemo from "../ui/checkbox";
 import { Button } from "../ui/button";
 import { Dialog } from "../ui/dialog";
 import { CardDetail } from "./card-detail";
-import { useAppDispatch } from "@/hooks/useRedux";
-import { AppDispatch } from "@/store";
-import { deleteCard, updateCard } from "@/store/boardSlice";
-import { CardService } from "@/services/card-service";
 import { Card as CardType } from "@/types/board.type";
+import { EntityId } from "@reduxjs/toolkit";
+import { CardFacade } from "@/app/facades/card.facade";
+import { useAppSelector } from "@/hooks/useRedux";
+import { RootState } from "@/store";
+import { cardsSelectors } from "@/store/board/board.selectors";
 
 type CardProps = {
-  item: CardType;
+  CardId: EntityId;
 };
 
-export const Card = ({ item }: CardProps) => {
+export const Card = ({ CardId }: CardProps) => {
+  const item = useAppSelector((state: RootState) => cardsSelectors.selectById(state, CardId))
   const {
     attributes,
     listeners,
@@ -31,8 +33,6 @@ export const Card = ({ item }: CardProps) => {
     isDragging,
   } = useSortable({ id: item._id, data: { ...item } });
 
-  const dispatch = useAppDispatch<AppDispatch>();
-
   const style = {
     touchAction: "none",
     transform: CSS.Translate.toString(transform),
@@ -41,21 +41,15 @@ export const Card = ({ item }: CardProps) => {
   };
 
   const handleDeleteCard = async () => {
-    dispatch(deleteCard({ columnId: item.columnId, cardId: item._id }));
-
-    await CardService.deleteCard(item._id);
+    CardFacade.delete(item._id, item.columnId)
   };
 
   const markCard = async (
-    columnId: string,
-    cardId: string,
-    field: string,
+    columnId: EntityId,
+    cardId: EntityId,
     value: any
   ) => {
-    const newData = { ...item, [field]: value };
-    dispatch(updateCard({ columnId, cardId, field, value }));
-
-    await CardService.updateContent(newData);
+    CardFacade.update(cardId, value, columnId)
   };
 
   return (
@@ -91,7 +85,7 @@ export const Card = ({ item }: CardProps) => {
               item.status ? "" : "hidden group-hover:block"
             }`}
             onCheckedChange={(checked) => {
-              markCard(item.columnId, item._id, "status", checked === true);
+              markCard(item.columnId, item._id, checked === true);
             }}
             checked={item.status}
           />
@@ -158,7 +152,7 @@ export const ListCard = ({ items }: ListCardProps) => {
     >
       <div className="flex flex-col">
         {items.map((item) => (
-          <Card key={item._id} item={item} />
+          <Card key={item._id} CardId={item._id} />
         ))}
       </div>
     </SortableContext>

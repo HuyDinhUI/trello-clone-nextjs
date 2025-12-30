@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Popover } from "@/components/ui/popover";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { AppDispatch, RootState } from "@/store";
-import { setBoards } from "@/store/boardSlice";
+import { boardsSelectors } from "@/store/board/board.selectors";
+import { setBoards } from "@/store/board/board.slice";
 import { fetchUser } from "@/store/userSlice";
 import { Board } from "@/types/board.type";
 import { Clock, Rocket, StarIcon } from "lucide-react";
@@ -22,7 +23,8 @@ type props = {
 
 const Boards = ({ data }: props) => {
   const dispatch = useAppDispatch<AppDispatch>();
-  const { boards } = useAppSelector((state: RootState) => state.board);
+  // const { boards } = useAppSelector((state: RootState) => state.board);
+  const boards = useAppSelector((state: RootState) => boardsSelectors.selectAll(state))
   const { user } = useAppSelector((state: RootState) => state.user);
 
   useEffect(() => {
@@ -32,7 +34,7 @@ const Boards = ({ data }: props) => {
   }, [dispatch, user]);
 
   useEffect(() => {
-    dispatch(setBoards({ data }));
+    dispatch(setBoards(data));
   }, [dispatch, data]);
 
   return (

@@ -1,15 +1,16 @@
 import API from "@/utils/axios";
+import { EntityId } from "@reduxjs/toolkit";
 
 interface ICard {
-  getCard(id: string): Promise<any>;
+  getCard(id: EntityId): Promise<any>;
   createCard(data: any): Promise<any>;
   updateOrderAndPosition(data: any): Promise<any>;
   updateContent(data: any): Promise<any>;
-  deleteCard(id: string): Promise<any>;
+  deleteCard(id: EntityId): Promise<any>;
 }
 
 class Card implements ICard {
-  getCard(id: string) {
+  getCard(id: EntityId) {
     return API.get(`/card/get/card/${id}`);
   }
 
@@ -25,9 +26,11 @@ class Card implements ICard {
     return API.put(`/card/update/content`, data);
   }
 
-  deleteCard(id: string) {
+  deleteCard(id: EntityId) {
     return API.delete(`/card/delete/${id}`);
   }
+
+  
 }
 
 export const CardService = new Card();

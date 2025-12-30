@@ -21,6 +21,7 @@ import {
   CardAttechment,
   CardDate,
 } from "@/components/popover-action/actions-card/index";
+import { EntityId } from "@reduxjs/toolkit";
 
 type CardDetailProps = {
   data: Card;
@@ -31,8 +32,8 @@ export const CardDetail = ({ data }: CardDetailProps) => {
   const dispatch = useAppDispatch<AppDispatch>();
 
   const handleUpdateCard = async (
-    columnId: string,
-    cardId: string,
+    columnId: EntityId,
+    cardId: EntityId,
     field: string,
     value: any
   ) => {

@@ -1,21 +1,18 @@
 import { VISIBILITY } from "@/mock/visibility";
 import clsx from "clsx";
-import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
-import { AppDispatch, RootState } from "@/store";
-import { updateBoard } from "@/store/boardSlice";
+import { RootState } from "@/store";
 import { COVER_COLOR, COVER_PHOTOS } from "@/mock/cover-data";
 import Image from "next/image";
-import { BoardService } from "@/services/board-service";
 import AlertDialogDemo from "../ui/alert-dialog";
+import { boardsSelectors } from "@/store/board/board.selectors";
+import { useAppSelector } from "@/hooks/useRedux";
+import { BoardFacade } from "@/app/facades/board.facade";
 
 export const FormChangeVisibility = () => {
-  const dispath = useAppDispatch<AppDispatch>();
-  const { board } = useAppSelector((state: RootState) => state.board);
+  const board = useAppSelector((state: RootState) => boardsSelectors.selectAll(state))
 
   const handleChangeVisibility = async (visibility: string) => {
-    dispath(updateBoard({ field: "visibility", value: visibility }));
-
-    await BoardService.updateVisibility(board._id!, visibility);
+    
   };
 
   return (
@@ -31,7 +28,7 @@ export const FormChangeVisibility = () => {
               key={i}
               className={clsx(
                 `flex w-full cursor-pointer items-center p-2 hover:bg-blue-500/10 hover:text-blue-500 rounded-sm ${
-                  board.visibility === item.value
+                  board[0].visibility === item.value
                     ? "bg-blue-500/10 text-blue-500"
                     : ""
                 }`
@@ -51,13 +48,10 @@ export const FormChangeVisibility = () => {
 };
 
 export const FormChangeCover = () => {
-  const dispath = useAppDispatch<AppDispatch>();
-  const { board } = useAppSelector((state: RootState) => state.board);
+  const {currenBoardId} = useAppSelector((state: RootState) => state.board)
 
   const handleChangeCover = async (cover: string) => {
-    dispath(updateBoard({ field: "cover", value: cover }));
-
-    await BoardService.updateCover(board._id!, cover);
+    BoardFacade.changeCover(currenBoardId!, cover)
   };
 
   return (

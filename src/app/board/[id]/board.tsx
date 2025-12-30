@@ -20,24 +20,16 @@ import {
   PointerSensor,
   DragOverlay,
   defaultDropAnimationSideEffects,
+  DragStartEvent,
+  DragOverEvent,
 } from "@dnd-kit/core";
 import { useEffect, useRef, useState } from "react";
 import { arrayMove } from "@dnd-kit/sortable";
 import { Column } from "@/components/boards/columns";
 import { Card, ListCard } from "@/components/boards/card";
-import { cloneDeep, isEmpty } from "lodash";
-import { generatePlaceholdeCard } from "@/utils/formatters";
-import API from "@/utils/axios";
-import { toast } from "react-toastify";
 import { useParams } from "next/navigation";
-import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
-import { AppDispatch, RootState } from "@/store";
-import {
-  closeBoard,
-  fetchBoard,
-  setColumn,
-  updateBoard,
-} from "@/store/boardSlice";
+import { useAppSelector } from "@/hooks/useRedux";
+import { RootState, store } from "@/store";
 import { SkeletonBoardPage } from "@/components/ui/skeleton";
 import { customCollisionDetection } from "@/lib/collisionDetection";
 import { Input } from "@/components/ui/input";
@@ -48,8 +40,20 @@ import { updateRecentBoard } from "@/store/userSlice";
 import { UserService } from "@/services/user-service";
 import { DropdownMenu } from "@/components/ui/dropdown";
 import { MenuItem } from "@/types/menu-item/menu-item-type";
-import { FormChangeCover, FormChangeVisibility } from "@/components/boards/form-actions";
+import {
+  FormChangeCover,
+  FormChangeVisibility,
+} from "@/components/boards/form-actions";
 import { AlertDialogCloseBoard } from "@/mock/AlertDialog-MockData";
+import { BoardFacade } from "@/app/facades/board.facade";
+import { EntityId } from "@reduxjs/toolkit";
+import {
+  boardsSelectors,
+  columnsSelectors,
+} from "@/store/board/board.selectors";
+import { findColumnByCardId, getNewCardIndex } from "@/utils/helper";
+import { moveCard } from "@/store/board/board.slice";
+import { CardFacade } from "@/app/facades/card.facade";
 
 const TYPE_ACTIVE_DND = {
   COLUMN: "T_COLUMN",
@@ -58,48 +62,47 @@ const TYPE_ACTIVE_DND = {
 
 const Board = () => {
   const { id } = useParams();
-  const dispatch = useAppDispatch<AppDispatch>();
-  const { board, columns, loading } = useAppSelector(
+  const board = useAppSelector((state: RootState) =>
+    boardsSelectors.selectById(state, id as EntityId)
+  );
+  const columns = useAppSelector((state: RootState) =>
+    columnsSelectors.selectAll(state)
+  );
+  const { loading, currenBoardId } = useAppSelector(
     (state: RootState) => state.board
   );
-
   const pointerSensor = useSensor(PointerSensor, {
     activationConstraint: {
       distance: 10,
     },
   });
   const sensors = useSensors(pointerSensor);
-  const [activeDragItemId, setActiveDragItemId] = useState<string | null>(null);
-  const [activeDragItemType, setActiveDragItemType] = useState<string | null>(
+  const [activeDragItemId, setActiveDragItemId] = useState<EntityId | null>(
+    null
+  );
+  const [activeDragItemType, setActiveDragItemType] = useState<EntityId | null>(
     null
   );
   const [activeDragItemData, setActiveDragItemData] = useState<any>(null);
 
   useEffect(() => {
     if (!id) return;
+    BoardFacade.load(id as EntityId);
+  }, [id]);
 
-    dispatch(fetchBoard(id));
-  }, [dispatch, id]);
+  // useEffect(() => {
+  //   if (!board._id) return;
 
-  useEffect(() => {
-    if (!board._id) return;
+  //   dispatch(updateRecentBoard({ board }));
+  //   const handleUpdateRecent = async () => {
+  //     await UserService.updateRecentBoardAsync(board._id!);
+  //   };
 
-    dispatch(updateRecentBoard({ board }));
-    const handleUpdateRecent = async () => {
-      await UserService.updateRecentBoardAsync(board._id!);
-    };
+  //   handleUpdateRecent();
+  // }, [dispatch, board]);
 
-    handleUpdateRecent();
-  }, [dispatch, board]);
-
-  const findColumn = (cardId: any) => {
-    return columns?.find((column) =>
-      column.cards.map((card) => card._id)?.includes(cardId)
-    );
-  };
-
-  const HandleDragStart = (event: any) => {
-    setActiveDragItemId(event?.active?.id);
+  const HandleDragStart = (event: DragStartEvent) => {
+    setActiveDragItemId(event?.active?.id as EntityId);
     setActiveDragItemType(
       event?.active?.data?.current?.columnId
         ? TYPE_ACTIVE_DND.CARD
@@ -108,21 +111,18 @@ const Board = () => {
     setActiveDragItemData(event?.active?.data?.current);
   };
 
-  const HandleDragOver = (event: any) => {
+  const HandleDragOver = (event: DragOverEvent) => {
     if (activeDragItemType === TYPE_ACTIVE_DND.COLUMN) return;
 
     const { active, over } = event;
 
     if (!over) return;
 
-    const {
-      id: activeDrappingCardId,
-      data: { current: activeDrappingCardData },
-    } = active;
-    const { id: overCardId } = over;
+    const activeCardId = active.id as string;
+    const overCardId = over.id as string;
 
-    const activeColumn = findColumn(activeDrappingCardId);
-    const overColumn = findColumn(overCardId);
+    const activeColumn = findColumnByCardId(activeCardId, columns);
+    const overColumn = findColumnByCardId(overCardId, columns);
 
     if (!activeColumn || !overColumn) return;
 
@@ -130,52 +130,20 @@ const Board = () => {
       (card) => card._id === overCardId
     );
 
-    const isBelowOverItem =
-      active.rect.current.translated &&
-      active.rect.current.translated.top > over.rect.top + over.rect.height;
-    const modifier = isBelowOverItem ? 1 : 0;
-    const newCardIndex =
-      overCardIndex >= 0
-        ? overCardIndex + modifier
-        : overColumn?.cards?.length + 1;
+    const newIndex = getNewCardIndex({
+      active,
+      over,
+      overCardIndex,
+    });
 
-    const nextColumns = cloneDeep(columns);
-    const nextActiveColumn = nextColumns?.find(
-      (column) => column._id === activeColumn._id
+    store.dispatch(
+      moveCard({
+        CardId: activeCardId,
+        fromColumnId: activeColumn._id,
+        toColumnId: overColumn._id,
+        newIndex,
+      })
     );
-    const nextOverColumn = nextColumns?.find(
-      (column) => column._id === overColumn._id
-    );
-
-    // xoá card đang kéo khỏi column chứa card đang kéo
-    if (nextActiveColumn) {
-      nextActiveColumn.cards = nextActiveColumn.cards.filter(
-        (card) => card._id !== activeDrappingCardId
-      );
-
-      if (isEmpty(nextActiveColumn.cards)) {
-        nextActiveColumn.cards = [generatePlaceholdeCard(nextActiveColumn)];
-      }
-    }
-
-    // thêm card đang kéo vào column được thả vào
-    if (nextOverColumn) {
-      nextOverColumn.cards = nextOverColumn.cards.filter(
-        (card) => card._id !== activeDrappingCardId
-      );
-      nextOverColumn.cards.splice(newCardIndex, 0, activeDrappingCardData);
-      nextOverColumn.cards = nextOverColumn.cards.map((card) =>
-        card._id === activeDrappingCardId
-          ? { ...card, columnId: overColumn._id }
-          : card
-      );
-
-      nextOverColumn.cards = nextOverColumn.cards.filter(
-        (card) => !card.FE_placeholderCard
-      );
-    }
-    console.log("nextColumns: ", nextColumns);
-    dispatch(setColumn(nextColumns));
   };
 
   const HandleDragEnd = async (event: any) => {
@@ -184,14 +152,7 @@ const Board = () => {
     if (!over) return;
 
     if (activeDragItemType === TYPE_ACTIVE_DND.CARD) {
-      try {
-        await API.put("/card/updateOrderAndPosition", {
-          boardId: id,
-          columns: columns,
-        });
-      } catch (err: any) {
-        toast.error(err?.response?.data?.message);
-      }
+      CardFacade.updateOrderAndPosition(currenBoardId!, columns);
     }
 
     if (activeDragItemType === TYPE_ACTIVE_DND.COLUMN && columns) {
@@ -199,16 +160,7 @@ const Board = () => {
       const newIndex = columns?.findIndex((c) => c._id === over.id);
 
       const NewColumnData = arrayMove(columns, oldIndex, newIndex);
-      dispatch(setColumn(NewColumnData));
-
-      try {
-        const res = await API.put(`/boards/reorderColumn/${id}`, {
-          columnsOrder: NewColumnData.map((c) => c._id),
-        });
-        console.log(res);
-      } catch (err: any) {
-        toast.error(err?.response?.data?.message);
-      }
+      BoardFacade.reorderColumn(currenBoardId!, NewColumnData)
     }
 
     setActiveDragItemId(null);
@@ -222,7 +174,7 @@ const Board = () => {
     }),
   };
 
-  if (loading) return <SkeletonBoardPage />;
+  if (loading || !board) return <SkeletonBoardPage />;
 
   return (
     <div className="flex h-full gap-5 relative">
@@ -233,6 +185,7 @@ const Board = () => {
         <div
           className="relative flex-1 h-full flex flex-col overflow-hidden bg-cover bg-no-repeat bg-center"
           style={{ backgroundImage: `url('${board?.cover}')` }}
+          
         >
           <HeaderBoard board={board} />
           <div className="flex-1 relative overflow-x-auto scroll-smooth">
@@ -252,14 +205,13 @@ const Board = () => {
                       label={activeDragItemData.label}
                       id={activeDragItemData.id}
                       card={activeDragItemData.card}
-                      boardId={activeDragItemData.boardId}
                     >
                       <ListCard items={activeDragItemData.card} />
                     </Column>
                   )}
                 {activeDragItemId &&
                   activeDragItemType === TYPE_ACTIVE_DND.CARD && (
-                    <Card item={activeDragItemData} />
+                    <Card CardId={activeDragItemId} />
                   )}
               </DragOverlay>
             </DndContext>
@@ -275,19 +227,14 @@ type props = {
 };
 
 const HeaderBoard = ({ board }: props) => {
-  const dispatch = useAppDispatch<AppDispatch>();
   const [openInput, setOpenInput] = useState<boolean>(false);
   const input = useRef<HTMLInputElement>(null);
 
-  const handleStarred = async (starred: boolean) => {
-    dispatch(updateBoard({ field: "starred", value: starred }));
-    await BoardService.starred(board._id!, starred);
-  };
+  const handleStarred = async (starred: boolean) => {};
 
   useEffect(() => {
     const handleClickOutside = async (event: MouseEvent) => {
       if (input.current && !input.current.contains(event.target as Node)) {
-        dispatch(updateBoard({ field: "title", value: input.current.value }));
         setOpenInput(false);
       }
     };
@@ -296,29 +243,29 @@ const HeaderBoard = ({ board }: props) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [dispatch]);
+  }, []);
 
   const MenuItemBoard: MenuItem[] = [
     {
       label: "Share",
       icon: <UserPlus size={15} />,
-      disabled: true
+      disabled: true,
     },
     { separator: true },
     {
       label: "About this board",
       icon: <Info size={15} />,
-      disabled: true
+      disabled: true,
     },
     {
       label: `Visibility: ${board.visibility}`,
       icon: <Users size={15} />,
-      elementPopup: <FormChangeVisibility/>
+      elementPopup: <FormChangeVisibility />,
     },
     {
       label: `Print, export, and share`,
       icon: <Share2 size={15} />,
-      disabled: true
+      disabled: true,
     },
     {
       label: !board.starred ? "Star" : "Unstar",
@@ -328,14 +275,14 @@ const HeaderBoard = ({ board }: props) => {
         <IconStarFilled size={15} color="#ffb703" />
       ),
       onClick() {
-        handleStarred(!board.starred)
+        handleStarred(!board.starred);
       },
     },
     { separator: true },
     {
       label: "Setting",
       icon: <Settings size={15} />,
-      disabled: true
+      disabled: true,
     },
     {
       label: "Change background",
@@ -345,16 +292,14 @@ const HeaderBoard = ({ board }: props) => {
           className="w-5 h-5 bg-cover rounded-sm"
         ></div>
       ),
-      elementPopup: <FormChangeCover/>
+      elementPopup: <FormChangeCover />,
     },
     { separator: true },
     {
       label: "Close board",
       icon: <Minus size={15} />,
       dialog: AlertDialogCloseBoard,
-      onClick() {
-        dispatch(closeBoard());
-      },
+      onClick() {},
     },
   ];
 

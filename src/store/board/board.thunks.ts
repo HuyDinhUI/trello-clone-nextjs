@@ -1,0 +1,157 @@
+import { BoardService } from "@/services/board-service";
+import { createAsyncThunk, EntityId } from "@reduxjs/toolkit";
+import {
+  addCard,
+  addColumn,
+  deleteCard,
+  deleteColumn,
+  setColumn,
+  updateBoard,
+  updateCard,
+  updateColumn,
+} from "./board.slice";
+import { ColumnService } from "@/services/column-service";
+import { CardService } from "@/services/card-service";
+import { Column } from "@/types/board.type";
+
+//=======================================================//
+//================== BOARD THUNK =======================//
+//=====================================================//
+
+export const fetchBoard = createAsyncThunk(
+  "board/fetch",
+  async (id: EntityId) => {
+    const res = await BoardService.getBoard(id);
+    return res.data;
+  }
+);
+
+export const changeCover = createAsyncThunk(
+  "board/changeCover",
+  async (payload: { id: EntityId; cover: string }, { dispatch }) => {
+    dispatch(
+      updateBoard({ id: payload.id, changes: { cover: payload.cover } })
+    );
+  }
+);
+
+export const reorderColumnAsync = createAsyncThunk(
+  "board/reorderColumn",
+  async (payload: { boardId: EntityId; columns: Column[] }, { dispatch }) => {
+    dispatch(setColumn(payload.columns));
+
+    const res = await BoardService.reorderColumn(payload.boardId, {
+      columnsOrder: payload.columns.map((c) => c._id),
+    });
+
+    return res.data;
+  }
+);
+
+//=======================================================//
+//================== COLUMN THUNK ======================//
+//=====================================================//
+
+export const addColumnAsync = createAsyncThunk(
+  "board/addColumn",
+  async (
+    payload: { tempId: EntityId; title: string; boardId: EntityId },
+    { dispatch }
+  ) => {
+    dispatch(addColumn(payload.tempId, payload.title, payload.boardId));
+
+    const res = await ColumnService.createColumn(payload);
+
+    return { realId: res.data._id, tempId: payload.tempId };
+  }
+);
+
+export const editLabelColumnAsync = createAsyncThunk(
+  "board/editLabelColumn",
+  async (payload: { id: EntityId; title: string }, { dispatch }) => {
+    dispatch(
+      updateColumn({ id: payload.id, changes: { title: payload.title } })
+    );
+
+    const res = await ColumnService.updateColumn(payload);
+
+    return res.data;
+  }
+);
+
+export const deleteColumnAsync = createAsyncThunk(
+  "board/deleteColumn",
+  async (id: EntityId, { dispatch }) => {
+    dispatch(deleteColumn(id));
+
+    const res = await ColumnService.deleteColumn(id);
+
+    return res.data;
+  }
+);
+
+//=======================================================//
+//================== CARD THUNK ========================//
+//=====================================================//
+
+export const addCardAsync = createAsyncThunk(
+  "board/addCard",
+  async (
+    payload: { tempId: EntityId; label: string; columnId: EntityId },
+    { dispatch }
+  ) => {
+    dispatch(addCard(payload.tempId, payload.label, payload.columnId));
+
+    const res = await CardService.createCard(payload);
+    return {
+      realId: res.data._id,
+      tempId: payload.tempId,
+      columnId: payload.columnId,
+    };
+  }
+);
+
+export const markedCardAsync = createAsyncThunk(
+  "board/markCard",
+  async (
+    payload: { id: EntityId; marked: boolean; columnId: EntityId },
+    { dispatch }
+  ) => {
+    dispatch(
+      updateCard({ id: payload.id, changes: { status: payload.marked } })
+    );
+
+    const res = await CardService.updateContent({
+      _id: payload.id,
+      columnId: payload.columnId,
+      status: payload.marked,
+    });
+
+    return res.data;
+  }
+);
+
+export const deleteCardAsync = createAsyncThunk(
+  "board/deleteCard",
+  async (payload: { CardId: EntityId; columnId: EntityId }, { dispatch }) => {
+    dispatch(
+      deleteCard({ CardId: payload.CardId, columnId: payload.columnId })
+    );
+
+    const res = await CardService.deleteCard(payload.CardId);
+
+    return res.data;
+  }
+);
+
+export const updateOrderAndPositionAsync = createAsyncThunk(
+  "board/updateOrderAndPosition",
+  async (payload: { boardId: EntityId; columns: Column[] }) => {
+    const res = await CardService.updateOrderAndPosition({
+      boardId: payload.boardId,
+      columns: payload.columns,
+    });
+
+    return res.data;
+  }
+);
