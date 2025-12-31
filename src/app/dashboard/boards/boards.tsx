@@ -5,7 +5,7 @@ import {
   BoardItem,
   BoardContainer,
   BoardWorkspace,
-} from "@/components/ui/board";
+} from "@/components/boards/board";
 import { Button } from "@/components/ui/button";
 import { Popover } from "@/components/ui/popover";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";

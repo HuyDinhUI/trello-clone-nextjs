@@ -32,6 +32,10 @@ export const changeCover = createAsyncThunk(
     dispatch(
       updateBoard({ id: payload.id, changes: { cover: payload.cover } })
     );
+
+    const res = await BoardService.updateCover(payload.id, payload.cover);
+
+    return res.data;
   }
 );
 
@@ -43,6 +47,38 @@ export const reorderColumnAsync = createAsyncThunk(
     const res = await BoardService.reorderColumn(payload.boardId, {
       columnsOrder: payload.columns.map((c) => c._id),
     });
+
+    return res.data;
+  }
+);
+
+export const starredAsync = createAsyncThunk(
+  "board/starredAsync",
+  async (payload: { boardId: EntityId; starred: boolean }, { dispatch }) => {
+    dispatch(
+      updateBoard({
+        id: payload.boardId,
+        changes: { starred: payload.starred },
+      })
+    );
+
+    const res = await BoardService.starred(payload.boardId, payload.starred);
+
+    return res.data;
+  }
+);
+
+export const editLabelBoardAsync = createAsyncThunk(
+  "board/editLabelBoard",
+  async (payload: { boardId: EntityId; title: string }, { dispatch }) => {
+    dispatch(
+      updateBoard({
+        id: payload.boardId,
+        changes: { title: payload.title },
+      })
+    );
+
+    const res = await BoardService.editLabel(payload.boardId, payload.title);
 
     return res.data;
   }
@@ -150,6 +186,26 @@ export const updateOrderAndPositionAsync = createAsyncThunk(
     const res = await CardService.updateOrderAndPosition({
       boardId: payload.boardId,
       columns: payload.columns,
+    });
+
+    return res.data;
+  }
+);
+
+export const changeCoverCardAsync = createAsyncThunk(
+  "board/changeCoverCard",
+  async (
+    payload: { CardId: EntityId; cover: string; columnId: EntityId },
+    { dispatch }
+  ) => {
+    dispatch(
+      updateCard({ id: payload.CardId, changes: { cover: payload.cover } })
+    );
+
+    const res = await CardService.updateContent({
+      _id: payload.CardId,
+      columnId: payload.columnId,
+      cover: payload.cover,
     });
 
     return res.data;

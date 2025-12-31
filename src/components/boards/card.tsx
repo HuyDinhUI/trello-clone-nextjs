@@ -49,7 +49,7 @@ export const Card = ({ CardId }: CardProps) => {
     cardId: EntityId,
     value: any
   ) => {
-    CardFacade.update(cardId, value, columnId)
+    CardFacade.marked(cardId, value, columnId)
   };
 
   return (

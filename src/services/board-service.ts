@@ -11,6 +11,7 @@ interface IBoard {
   updateCover(id: EntityId, cover: string): Promise<any>
   updateVisibility(id: EntityId, visibility: string): Promise<any>
   closed(id: EntityId, closed: boolean): Promise<any>
+  editLabel(id: EntityId, title: string): Promise<any>
 }
 
 class Board implements IBoard {
@@ -48,6 +49,10 @@ class Board implements IBoard {
 
   closed(id: EntityId, closed: boolean): Promise<any> {
     return API.put(`/boards/closed?boardId=${id}&status=${closed}`)
+  }
+
+  editLabel(id: EntityId, title: string): Promise<any> {
+    return API.put(`/boards/label?boardId=${id}&title=${title}`)
   }
 }
 

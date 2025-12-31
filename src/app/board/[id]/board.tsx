@@ -230,11 +230,14 @@ const HeaderBoard = ({ board }: props) => {
   const [openInput, setOpenInput] = useState<boolean>(false);
   const input = useRef<HTMLInputElement>(null);
 
-  const handleStarred = async (starred: boolean) => {};
+  const handleStarred = async (starred: boolean) => {
+    BoardFacade.starred(board._id, starred)
+  };
 
   useEffect(() => {
     const handleClickOutside = async (event: MouseEvent) => {
       if (input.current && !input.current.contains(event.target as Node)) {
+        BoardFacade.editLabel(board._id, input.current.value)
         setOpenInput(false);
       }
     };

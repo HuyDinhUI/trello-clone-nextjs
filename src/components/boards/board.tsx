@@ -4,10 +4,7 @@ import { type ReactNode } from "react";
 import { IconStar, IconStarFilled } from "@tabler/icons-react";
 import Link from "next/link";
 import { Board } from "@/types/board.type";
-import { BoardService } from "@/services/board-service";
-import { useAppDispatch } from "@/hooks/useRedux";
-import { AppDispatch } from "@/store";
-import { updateBoards } from "@/store/boardSlice";
+import { BoardFacade } from "@/app/facades/board.facade";
 
 type BoardVariant = "default" | "primary";
 
@@ -17,13 +14,8 @@ export type BoardItemProps = {
 };
 
 export const BoardItem = ({ type, board }: BoardItemProps) => {
-  const dispatch = useAppDispatch<AppDispatch>();
-
-  const handleStarred = async (star: boolean) => {
-    dispatch(
-      updateBoards({ boardId: board._id, field: "starred", value: star })
-    );
-    await BoardService.starred(board._id!, star);
+  const handleStarred = async (starred: boolean) => {
+    BoardFacade.starred(board._id, starred);
   };
 
   if (type === "default") {

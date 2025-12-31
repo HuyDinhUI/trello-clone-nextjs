@@ -9,10 +9,6 @@ import { COVER_COLOR, COVER_PHOTOS } from "@/mock/cover-data";
 import Image from "next/image";
 import "quill/dist/quill.snow.css";
 import Editor from "../ui/editor";
-import { useAppDispatch } from "@/hooks/useRedux";
-import { AppDispatch } from "@/store";
-import { updateCard } from "@/store/boardSlice";
-import { CardService } from "@/services/card-service";
 import { Card } from "@/types/board.type";
 import {
   AddToCard,
@@ -21,7 +17,7 @@ import {
   CardAttechment,
   CardDate,
 } from "@/components/popover-action/actions-card/index";
-import { EntityId } from "@reduxjs/toolkit";
+import { CardFacade } from "@/app/facades/card.facade";
 
 type CardDetailProps = {
   data: Card;
@@ -29,21 +25,6 @@ type CardDetailProps = {
 
 export const CardDetail = ({ data }: CardDetailProps) => {
   const [isOpenForm, setIsOpenForm] = useState<boolean>(false);
-  const dispatch = useAppDispatch<AppDispatch>();
-
-  const handleUpdateCard = async (
-    columnId: EntityId,
-    cardId: EntityId,
-    field: string,
-    value: any
-  ) => {
-    const newData = { ...data, [field]: value };
-    dispatch(updateCard({ columnId, cardId, field, value }));
-
-    try {
-      await CardService.updateContent(newData);
-    } catch {}
-  };
 
   return (
     <div className={`flex flex-col max-h-dvh bg-white rounded-xl`}>
@@ -78,12 +59,7 @@ export const CardDetail = ({ data }: CardDetailProps) => {
                     {COVER_COLOR.map((c, i) => (
                       <Image
                         onClick={() =>
-                          handleUpdateCard(
-                            data.columnId,
-                            data._id,
-                            "cover",
-                            c.url
-                          )
+                          CardFacade.changeCoverCard(data._id, c.url, data.columnId)
                         }
                         key={i}
                         src={c.url}
@@ -101,12 +77,7 @@ export const CardDetail = ({ data }: CardDetailProps) => {
                     {COVER_PHOTOS.map((c, i) => (
                       <Image
                         onClick={() =>
-                          handleUpdateCard(
-                            data.columnId,
-                            data._id,
-                            "cover",
-                            c.url
-                          )
+                          CardFacade.changeCoverCard(data._id, c.url, data.columnId)
                         }
                         key={i}
                         src={c.url}
@@ -137,7 +108,7 @@ export const CardDetail = ({ data }: CardDetailProps) => {
         {data?.cover && (
           <span
             onClick={() =>
-              handleUpdateCard(data.columnId, data._id, "cover", "")
+              CardFacade.changeCoverCard(data._id, '', data.columnId)
             }
             className="absolute hidden group-hover:block bottom-2 right-3 text-sm bg-white rounded-md p-1 cursor-pointer"
           >
@@ -151,12 +122,7 @@ export const CardDetail = ({ data }: CardDetailProps) => {
           <div className="px-5 pt-5 flex items-center gap-5">
             <CheckboxDemo
               onCheckedChange={(checked) =>
-                handleUpdateCard(
-                  data.columnId,
-                  data._id,
-                  "status",
-                  checked === true
-                )
+                CardFacade.marked(data._id, checked === true, data.columnId)
               }
               checked={data?.status}
             />
