@@ -1,11 +1,7 @@
-import Templates from "./templates"
+import Templates from "./templates";
 
 const TemplatesPage = () => {
-    return (
-        <div>
-            <Templates/>
-        </div>
-    )
-}
+  return <Templates />;
+};
 
-export default TemplatesPage
+export default TemplatesPage;
