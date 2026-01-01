@@ -1,7 +1,9 @@
-import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
 
-export function proxy(req: any) {
-  const token = req.cookies.get("accessToken");
+export async function proxy(req: NextRequest) {
+  const cookieStore = await cookies()
+  const token = cookieStore.get("accessToken")
 
   console.log(token)
 
@@ -13,5 +15,5 @@ export function proxy(req: any) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/admin/:path*","/board/:path*",'/'],
+  matcher: ["/dashboard/:path*", "/admin/:path*","/board/:path*"],
 };

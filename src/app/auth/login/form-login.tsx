@@ -15,6 +15,7 @@ import FieldError from "@/components/ui/field-error";
 import { FieldLabel } from "@/components/ui/field-label";
 import { AuthSevices } from "@/services/auth-service";
 import { LoginBody } from "@/types/auth.type";
+import axios from "axios";
 
 const FormLogin = () => {
   const form = useForm<z.infer<typeof LoginValidation>>({
@@ -33,6 +34,7 @@ const FormLogin = () => {
       if (res.data.role === "customer") {
         router.push("/dashboard/boards");
       }
+      await axios.post('http://localhost:3000/api/auth',res.data)
     } catch (error: any) {
       setError(error.response?.data?.message);
     }

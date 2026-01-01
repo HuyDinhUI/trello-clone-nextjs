@@ -23,7 +23,6 @@ type props = {
 
 const Boards = ({ data }: props) => {
   const dispatch = useAppDispatch<AppDispatch>();
-  // const { boards } = useAppSelector((state: RootState) => state.board);
   const boards = useAppSelector((state: RootState) => boardsSelectors.selectAll(state))
   const { user } = useAppSelector((state: RootState) => state.user);
 
