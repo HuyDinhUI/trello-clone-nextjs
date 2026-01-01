@@ -110,7 +110,7 @@ const FormLogin = () => {
             onClick={() =>
               (window.location.href = "http://localhost:5024/v1/auth/google")
             }
-            className="justify-center w-full"
+            className="justify-center w-full shadow-md"
             size="lg"
             variant="outline"
             title="Login with Google"

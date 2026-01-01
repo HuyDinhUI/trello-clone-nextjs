@@ -29,7 +29,7 @@ export const SkeletonBoardPage = () => {
         <div className="flex-1">
           <div className="h-full p-5 grid grid-cols-5 gap-2">
             {Array.from({length: 5}).map((item, i) => (
-              <div key={i} className={`animate-pulse bg-gray-200 h-${5 *(i+1)}`}></div>
+              <div key={i} className={`animate-pulse bg-gray-200 h-${5 *(i+1)} rounded-md`}></div>
             ))}
           </div>
         </div>

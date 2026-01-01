@@ -19,9 +19,9 @@ const boardSlice = createSlice({
   name: "board",
   initialState,
   reducers: {
-    //===============================================//
-    //================== BOARD =======================//
-    //===============================================//
+    //=================================================//
+    //================== BOARD ========================//
+    //=================================================//
 
     setBoards(state, action: PayloadAction<Board[]>) {
       boardsAdapter.setAll(state.boards, action.payload);
@@ -41,9 +41,9 @@ const boardSlice = createSlice({
       });
     },
 
-    //===============================================//
-    //================== COLUMN =======================//
-    //===============================================//
+    //================================================//
+    //================== COLUMN ======================//
+    //================================================//
 
     setColumn(state, action: PayloadAction<Column[]>) {
       columnAdapter.setAll(state.columns, action.payload);
@@ -52,6 +52,15 @@ const boardSlice = createSlice({
     addColumn: {
       reducer(state, action: PayloadAction<Column>) {
         columnAdapter.addOne(state.columns, action.payload);
+
+        const cardTemp = generatePlaceholdeCard(action.payload);
+
+        columnAdapter.updateOne(state.columns, {
+          id: action.payload._id,
+          changes: { cards: [cardTemp] },
+        });
+
+        cardAdapter.addOne(state.cards, cardTemp);
 
         boardsAdapter.updateOne(state.boards, {
           id: action.payload.boardId,
@@ -88,9 +97,9 @@ const boardSlice = createSlice({
       columnAdapter.removeOne(state.columns, action.payload);
     },
 
-    //===============================================//
-    //================== CARD =======================//
-    //===============================================//
+    //=================================================//
+    //================== CARD =========================//
+    //=================================================//
 
     addCard: {
       reducer(state, action: PayloadAction<Card>) {
@@ -120,7 +129,7 @@ const boardSlice = createSlice({
             checklist: [],
             joined: [],
             FE_placeholderCard: false,
-            isTepm: true,
+            isTemp: true,
           } as Card,
         };
       },
@@ -170,15 +179,19 @@ const boardSlice = createSlice({
       );
 
       if (isEmpty(fromColumn.cards)) {
-        const cardTemp = generatePlaceholdeCard(fromColumn)
-        fromColumn.cards = [cardTemp]
-        cardAdapter.addOne(state.cards, cardTemp)
+        const cardTemp = generatePlaceholdeCard(fromColumn);
+        fromColumn.cards = [cardTemp];
+        cardAdapter.addOne(state.cards, cardTemp);
       }
 
       cardAdapter.updateOne(state.cards, {
         id: CardId,
         changes: { columnId: toColumnId },
       });
+
+      toColumn.cards = toColumn.cards.filter(
+        (card) => !card.FE_placeholderCard
+      );
 
       toColumn.cards.splice(newIndex, 0, state.cards.entities[CardId]);
     },
@@ -227,8 +240,8 @@ const boardSlice = createSlice({
         state.error = "Load board failed";
       })
 
-      //======================================================//
-      //================== COLUMN CASE =======================//
+      //=====================================================//
+      //================== COLUMN CASE ======================//
       //=====================================================//
 
       .addCase(addColumnAsync.fulfilled, (state, action) => {
@@ -238,9 +251,9 @@ const boardSlice = createSlice({
         });
       })
 
-      //=====================================================//
+      //====================================================//
       //================== CARD CASE =======================//
-      //===================================================//
+      //====================================================//
 
       .addCase(addCardAsync.fulfilled, (state, action) => {
         cardAdapter.updateOne(state.cards, {
