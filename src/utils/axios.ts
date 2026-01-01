@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 
 
 const API = axios.create({
-  baseURL:process.env.API_URI ?? 'https://trello-clone-api-one.vercel.app/v1',
+  baseURL:process.env.API_URI ?? 'http://localhost:5024/v1',
   timeout: 10000,
   withCredentials: true,
   headers: {
