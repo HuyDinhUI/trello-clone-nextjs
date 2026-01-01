@@ -34,7 +34,7 @@ const FormLogin = () => {
       if (res.data.role === "customer") {
         router.push("/dashboard/boards");
       }
-      await axios.post('http://localhost:3000/api/auth',res.data)
+      await axios.post('https://trello-clone-nextjs-seven.vercel.app/api/auth',res.data)
     } catch (error: any) {
       setError(error.response?.data?.message);
     }
