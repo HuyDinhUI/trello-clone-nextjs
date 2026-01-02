@@ -31,10 +31,12 @@ const FormLogin = () => {
   const submitLogin = async (data: LoginBody) => {
     try {
       const res = await AuthSevices.login(data)
+      await axios.post(`${process.env.NEXT_PUBLIC_SERVER_NEXTJS}/api/auth`,res.data)
+
       if (res.data.role === "customer") {
         router.push("/dashboard/boards");
       }
-      await axios.post(`${process.env.NEXT_PUBLIC_SERVER_NEXTJS}/api/auth`,res.data)
+      
     } catch (error: any) {
       setError(error.response?.data?.message);
     }
@@ -110,7 +112,7 @@ const FormLogin = () => {
           <Button
             type="button"
             onClick={() =>
-              (window.location.href = "http://localhost:5024/v1/auth/google")
+              (window.location.href = `${process.env.NEXT_PUBLIC_API_URI}/auth/google`)
             }
             className="justify-center w-full shadow-md"
             size="lg"

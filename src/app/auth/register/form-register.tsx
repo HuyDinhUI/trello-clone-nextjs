@@ -153,7 +153,7 @@ const FormRegister = () => {
           <Button
             type="button"
             onClick={() =>
-              (window.location.href = "http://localhost:5024/v1/auth/google")
+              (window.location.href = `${process.env.NEXT_PUBLIC_API_URI}/auth/google`)
             }
             className="justify-center w-full shadow-md"
             size="lg"

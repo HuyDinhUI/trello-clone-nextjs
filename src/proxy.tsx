@@ -1,19 +1,35 @@
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function proxy(req: NextRequest) {
-  const cookieStore = await cookies()
-  const token = cookieStore.get("accessToken")
+const PRIVATE_PATHS = ["/dashboard", "/admin", "/board"];
 
-  console.log(token)
+const AUTH_PATHS = ["/auth/login", "/auth/register"];
 
-  if (!token) {
+export function proxy(req: NextRequest) {
+  const token = req.cookies.get("accessToken")?.value;
+  const { pathname } = req.nextUrl;
+
+  const isPrivateRoute = PRIVATE_PATHS.some((path) =>
+    pathname.startsWith(path)
+  );
+
+  const isAuthRoute = AUTH_PATHS.includes(pathname);
+
+  if (isPrivateRoute && !token) {
     return NextResponse.redirect(new URL("/auth/login", req.url));
+  }
+
+  if (isAuthRoute && token) {
+    return NextResponse.redirect(new URL("/dashboard/boards", req.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/admin/:path*","/board/:path*"],
+  matcher: [
+    "/dashboard/:path*",
+    "/admin/:path*",
+    "/board/:path*",
+    "/auth/:path*",
+  ],
 };
