@@ -49,6 +49,7 @@ export const Header = () => {
     try {
       await API.delete("/authorization/logout");
       localStorage.removeItem("persist:root");
+      localStorage.removeItem("accessToken");
       window.location.href = "/auth/login";
     } catch (error: any) {
       console.log(error?.response?.data?.message);

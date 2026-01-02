@@ -31,8 +31,8 @@ const FormLogin = () => {
   const submitLogin = async (data: LoginBody) => {
     try {
       const res = await AuthSevices.login(data)
-      await axios.post(`${process.env.NEXT_PUBLIC_SERVER_NEXTJS}/api/auth`,res.data)
-
+      // await axios.post(`${process.env.NEXT_PUBLIC_SERVER_NEXTJS}/api/auth`,res.data)
+      localStorage.setItem("accessToken", res.data.accessToken)
       if (res.data.role === "customer") {
         router.push("/dashboard/boards");
       }

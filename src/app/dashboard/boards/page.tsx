@@ -7,7 +7,7 @@ const BoardsPage = async () => {
 
   const data = await fetch(`${process.env.API_URI}/boards`, {
     headers: {
-      Cookie: `accessToken=${token?.value}`,
+      Authorization: `Bearer ${token?.value}`,
     },
     cache: "no-store",
   }).then((res) => res.json());

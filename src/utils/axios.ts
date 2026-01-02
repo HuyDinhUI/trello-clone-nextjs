@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 
 
 const API = axios.create({
-  baseURL:process.env.NEXT_PUBLIC_API_URI ?? 'https://trello-clone-api-one.vercel.app/v1',
+  baseURL:process.env.NEXT_PUBLIC_API_URI ?? 'http://localhost:5024/v1',
   timeout: 10000,
   withCredentials: true,
   headers: {
@@ -15,7 +15,7 @@ const API = axios.create({
 // Optional: Interceptors
 API.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('accessToken')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
