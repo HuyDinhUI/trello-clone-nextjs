@@ -23,6 +23,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useAppSelector } from "@/hooks/useRedux";
 import { RootState } from "@/store";
+import { AuthFacade } from "@/app/facades/auth.facade";
 
 export const Header = () => {
   const [theme, setTheme] = useState<string | null>("light");
@@ -46,14 +47,7 @@ export const Header = () => {
   }, [theme]);
 
   const Logout = async () => {
-    try {
-      await API.delete("/authorization/logout");
-      localStorage.removeItem("persist:root");
-      localStorage.removeItem("accessToken");
-      window.location.href = "/auth/login";
-    } catch (error: any) {
-      console.log(error?.response?.data?.message);
-    }
+    AuthFacade.logout()
   };
 
   const accountItems: MenuItem[] = [

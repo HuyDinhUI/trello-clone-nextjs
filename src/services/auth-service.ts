@@ -1,11 +1,13 @@
 import { LoginBody, RegisterBody } from "@/types/auth.type";
 import API from "@/utils/axios"
+import axios from "axios";
 
 interface IAuth {
     login (data: LoginBody): Promise<any>
     register (data: RegisterBody): Promise<any>
     logout (): Promise<any>
-    refreshToken (): Promise<any>
+    refreshToken (refreshToken: string): Promise<any>
+    setCookie (data: any): Promise<any>
 }
 
 class Auth implements IAuth {
@@ -19,11 +21,15 @@ class Auth implements IAuth {
     }
 
     logout () {
-        return API.delete('authorization/logout')
+        return axios.delete(`${process.env.NEXT_PUBLIC_SERVER_NEXTJS}/api/auth/removeCookie`)
     }
 
     refreshToken () {
-        return API.put('authorization/refresh_token')
+        return axios.put(`${process.env.NEXT_PUBLIC_SERVER_NEXTJS}/api/auth/refreshToken`)
+    }
+
+    setCookie(data: any): Promise<any> {
+        return axios.post(`${process.env.NEXT_PUBLIC_SERVER_NEXTJS}/api/auth/setCookie`, data)
     }
 }
 

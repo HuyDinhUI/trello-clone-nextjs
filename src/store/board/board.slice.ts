@@ -1,7 +1,12 @@
 import { createSlice, EntityId, PayloadAction, Update } from "@reduxjs/toolkit";
 import { boardsAdapter, cardAdapter, columnAdapter } from "./board.adapter";
 import { Board, Card, Column } from "@/types/board.type";
-import { addCardAsync, addColumnAsync, fetchBoard } from "./board.thunks";
+import {
+  addCardAsync,
+  addColumnAsync,
+  fetchAllBoard,
+  fetchBoard,
+} from "./board.thunks";
 import { isEmpty } from "lodash";
 import { generatePlaceholdeCard } from "@/utils/formatters";
 
@@ -200,8 +205,20 @@ const boardSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
+      .addCase(fetchAllBoard.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchAllBoard.fulfilled, (state, action) => {
+        state.loading = false;
+        boardsAdapter.setAll(state.boards, action.payload);
+      })
+      .addCase(fetchAllBoard.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message!;
+      })
+
       //===============================================//
-      //================== BOARD CASE =================//
+      //================== RECENT BOARD CASE =================//
       //===============================================//
 
       .addCase(fetchBoard.pending, (state) => {

@@ -1,3 +1,4 @@
+import { store } from "@/store";
 import { Column } from "@/types/board.type";
 import { EntityId } from "@reduxjs/toolkit";
 
@@ -15,3 +16,14 @@ export const getNewCardIndex = ({ active, over, overCardIndex }: any) => {
 
   return isBelow ? overCardIndex + 1 : overCardIndex;
 };
+
+export function getPersistedAuth() {
+  try {
+    const token = store.getState().auth.accessToken
+    if (!token) return null;
+    return token
+  } catch {
+    return null;
+  }
+}
+

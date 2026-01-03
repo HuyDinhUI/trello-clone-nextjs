@@ -16,11 +16,13 @@ export async function POST(request: Request) {
     path: "/",
   });
 
-  cookieStore.set("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: true,
-    path: "/",
-  });
+  if (refreshToken) {
+    cookieStore.set("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      path: "/",
+    });
+  }
 
   return Response.json({ res }, { status: 200 });
 }

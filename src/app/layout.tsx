@@ -3,6 +3,7 @@ import { Manrope } from "next/font/google";
 import "./globals.css";
 import ReduxProvider from "@/providers/redux.provider";
 import { ToastContainer } from "react-toastify";
+import UserBootstrap from "@/providers/user.provider";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -25,7 +26,10 @@ export default function RootLayout({
       <body
         className={`${manrope.variable} antialiased`}
       >
-        <ReduxProvider>{children}</ReduxProvider>
+        <ReduxProvider>
+          <UserBootstrap/>
+          {children}
+        </ReduxProvider>
         <ToastContainer position="top-right" theme="colored" />
       </body>
     </html>

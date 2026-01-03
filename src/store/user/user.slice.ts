@@ -1,11 +1,6 @@
-import { UserService } from "@/services/user-service";
 import { User } from "@/types/user.type";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-
-export const fetchUser = createAsyncThunk("user/get", async () => {
-  const res = await UserService.getUser();
-  return res.data.user;
-});
+import { createSlice } from "@reduxjs/toolkit";
+import { fetchUser } from "./user.thunks";
 
 const user: User = {
   _id: "",
@@ -53,8 +48,9 @@ const userSlice = createSlice({
         state.loading = false;
         state.user = action.payload;
       })
-      .addCase(fetchUser.rejected, (state) => {
+      .addCase(fetchUser.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.error.message!
       });
   },
 });

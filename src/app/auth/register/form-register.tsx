@@ -1,7 +1,6 @@
 "use client";
 
 import { Controller, useForm } from "react-hook-form";
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AlertDanger } from "@/components/ui/alert";
@@ -13,11 +12,13 @@ import { RegisterValidation } from "@/validators/auth.validator";
 import FieldError from "@/components/ui/field-error";
 import { FieldLabel } from "@/components/ui/field-label";
 import { RegisterBody } from "@/types/auth.type";
-import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
-import { AuthSevices } from "@/services/auth-service";
+import { AuthFacade } from "@/app/facades/auth.facade";
+import { useAppSelector } from "@/hooks/useRedux";
+import { RootState } from "@/store";
+import { Spinner } from "@/components/ui/loading";
 
 const FormRegister = () => {
+  const { loading, error } = useAppSelector((state: RootState) => state.auth);
   const form = useForm<z.infer<typeof RegisterValidation>>({
     resolver: zodResolver(RegisterValidation),
     defaultValues: {
@@ -27,22 +28,15 @@ const FormRegister = () => {
       confirmPassword: "",
     },
   });
-  const [error, setError] = useState(undefined);
-  const router = useRouter();
   const submitLogin = async (data: RegisterBody) => {
-    try {
-      await AuthSevices.register(data)
-      toast.success("Register is success", {
-        theme: "light",
-      });
-      router.push("/auth/login");
-    } catch (error: any) {
-      setError(error.response?.data?.message);
-    }
+    AuthFacade.register(data);
   };
 
   return (
-    <form className="w-full p-10" onSubmit={form.handleSubmit(submitLogin)}>
+    <form
+      className={`w-full p-10 ${loading ? "pointer-events-none" : ""}`}
+      onSubmit={form.handleSubmit(submitLogin)}
+    >
       <div className="text-left mb-5">
         <h1 className="font-bold text-2xl">Welcome to Trello</h1>
         <p className="font-light">Register to your trello account</p>
@@ -143,7 +137,8 @@ const FormRegister = () => {
         className="w-full justify-center rounded-sm"
         variant="dark"
         size="md"
-        title="Login"
+        title={loading ? "" : "Submit"}
+        icon={loading ? <Spinner /> : ""}
       />
       <div className="relative border-t border-gray-200 w-full mt-10 dark:border-transparent">
         <p className="absolute -top-3.5 px-2 right-[50%] translate-x-[50%] bg-white font-light dark:bg-transparent">

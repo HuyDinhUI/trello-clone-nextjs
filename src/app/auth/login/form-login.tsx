@@ -1,21 +1,21 @@
 "use client";
 
 import { Controller, useForm } from "react-hook-form";
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AlertDanger } from "@/components/ui/alert";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { GoogleIcon } from "@/assets/icons";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginValidation } from "@/validators/auth.validator";
 import FieldError from "@/components/ui/field-error";
 import { FieldLabel } from "@/components/ui/field-label";
-import { AuthSevices } from "@/services/auth-service";
 import { LoginBody } from "@/types/auth.type";
-import axios from "axios";
+import { AuthFacade } from "@/app/facades/auth.facade";
+import { useAppSelector } from "@/hooks/useRedux";
+import { RootState } from "@/store";
+import { Spinner } from "@/components/ui/loading";
 
 const FormLogin = () => {
   const form = useForm<z.infer<typeof LoginValidation>>({
@@ -25,25 +25,19 @@ const FormLogin = () => {
       password: "",
     },
   });
-  const router = useRouter();
-  const [error, setError] = useState(undefined);
+
+  const { loading, error } = useAppSelector((state: RootState) => state.auth);
 
   const submitLogin = async (data: LoginBody) => {
-    try {
-      const res = await AuthSevices.login(data)
-      // await axios.post(`${process.env.NEXT_PUBLIC_SERVER_NEXTJS}/api/auth`,res.data)
-      localStorage.setItem("accessToken", res.data.accessToken)
-      if (res.data.role === "customer") {
-        router.push("/dashboard/boards");
-      }
-      
-    } catch (error: any) {
-      setError(error.response?.data?.message);
-    }
+    AuthFacade.login(data);
+    
   };
 
   return (
-    <form className="w-full p-10" onSubmit={form.handleSubmit(submitLogin)}>
+    <form
+      className={`w-full p-10 ${loading ? "pointer-events-none" : ""}`}
+      onSubmit={form.handleSubmit(submitLogin)}
+    >
       <div className="text-center mb-5">
         <h1 className="font-bold text-2xl">Welcome back</h1>
         <p className="font-light">Login to your trello account</p>
@@ -88,7 +82,10 @@ const FormLogin = () => {
               type="password"
               autoComplete="password"
             />
-            <Link className="absolute top-1 right-0 text-sm hover:underline" href={"/restpassword"}>
+            <Link
+              className="absolute top-1 right-0 text-sm hover:underline"
+              href={"/restpassword"}
+            >
               Forgot your password?
             </Link>
             {fieldState.invalid && (
@@ -102,7 +99,8 @@ const FormLogin = () => {
         className="w-full justify-center rounded-sm"
         variant="dark"
         size="md"
-        title="Login"
+        title={loading ? "": "Login"}
+        icon={loading ? <Spinner /> : ""}
       />
       <div className="relative border-t border-gray-200 w-full mt-10 dark:border-transparent">
         <p className="absolute -top-3.5 px-2 right-[50%] translate-x-[50%] bg-white font-light dark:bg-transparent">

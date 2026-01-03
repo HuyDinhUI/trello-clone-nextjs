@@ -1,9 +1,13 @@
-import { changeCover, editLabelBoardAsync, fetchBoard, reorderColumnAsync, starredAsync } from '@/store/board/board.thunks'
+import { changeCover, editLabelBoardAsync, fetchAllBoard, fetchBoard, reorderColumnAsync, starredAsync } from '@/store/board/board.thunks'
 import {store} from '@/store/index'
 import { Column } from '@/types/board.type'
 import { EntityId } from '@reduxjs/toolkit'
 
 export const BoardFacade = {
+
+    loadAll () {
+        store.dispatch(fetchAllBoard())
+    },
 
     load (id: EntityId) {
         store.dispatch(fetchBoard(id))

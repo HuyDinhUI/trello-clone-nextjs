@@ -1,6 +1,7 @@
 
 import axios from 'axios'
-import { redirect } from 'next/navigation'
+import { getPersistedAuth } from './helper'
+import { AuthFacade } from '@/app/facades/auth.facade'
 
 
 const API = axios.create({
@@ -15,7 +16,7 @@ const API = axios.create({
 // Optional: Interceptors
 API.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken')
+    const token = getPersistedAuth()
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -29,8 +30,11 @@ API.interceptors.response.use(
   (error) => {
     // Optional: handle global errors
     if (error.response?.status === 401) {
-      // logout, redirect, or show message
-      redirect('/auth/login')
+      AuthFacade.logout()
+    }
+
+    if (error.response?.status === 410) {
+      AuthFacade.refresh()
     }
     return Promise.reject(error)
   }

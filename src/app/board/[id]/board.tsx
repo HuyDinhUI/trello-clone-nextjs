@@ -36,7 +36,6 @@ import { Input } from "@/components/ui/input";
 import { Board as BoardType } from "@/types/board.type";
 import { IconStar, IconStarFilled } from "@tabler/icons-react";
 import { BoardService } from "@/services/board-service";
-import { updateRecentBoard } from "@/store/userSlice";
 import { UserService } from "@/services/user-service";
 import { DropdownMenu } from "@/components/ui/dropdown";
 import { MenuItem } from "@/types/menu-item/menu-item-type";

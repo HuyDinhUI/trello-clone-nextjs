@@ -1,6 +1,9 @@
+"use client"
+
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import boardReducer from "./board/board.slice";
-import userReducer from "./userSlice";
+import userReducer from "./user/user.slice";
+import authReducer from "./auth/auth.slice"
 import storage from "redux-persist/lib/storage";
 import {
   persistReducer,
@@ -16,12 +19,13 @@ import {
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["user"],
+  whitelist: ["auth"],
 };
 
 const rootReducer = combineReducers({
   user: userReducer,
   board: boardReducer,
+  auth: authReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

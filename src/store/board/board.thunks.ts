@@ -18,6 +18,14 @@ import { Column } from "@/types/board.type";
 //================== BOARD THUNK =======================//
 //=====================================================//
 
+export const fetchAllBoard = createAsyncThunk(
+  "board/fetchAll",
+  async () => {
+    const res = await BoardService.getBoards()
+    return res.data
+  }
+)
+
 export const fetchBoard = createAsyncThunk(
   "board/fetch",
   async (id: EntityId) => {
