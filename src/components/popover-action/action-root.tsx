@@ -6,12 +6,12 @@ import { ReactNode } from "react";
 
 type props = {
   children: ReactNode;
-  titleButton: string;
+  titleButton?: string;
   titleHeader: string;
   icon: ReactNode;
 };
 
-const ActionCardRoot = ({
+const ActionRoot = ({
   children,
   titleButton,
   titleHeader,
@@ -30,4 +30,4 @@ const ActionCardRoot = ({
   );
 };
 
-export default ActionCardRoot;
+export default ActionRoot;

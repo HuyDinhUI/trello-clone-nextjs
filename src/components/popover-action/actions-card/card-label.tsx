@@ -1,17 +1,17 @@
 "use client";
 
 import { Tag } from "lucide-react";
-import ActionCardRoot from "./action-card-root";
+import ActionRoot from "../action-root";
 
 const CardLabel = () => {
   return (
-    <ActionCardRoot
+    <ActionRoot
       titleButton="Labels"
       titleHeader="Labels"
       icon={<Tag size={18} />}
     >
       <div></div>
-    </ActionCardRoot>
+    </ActionRoot>
   );
 };
 

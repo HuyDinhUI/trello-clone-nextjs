@@ -1,17 +1,17 @@
 "use client";
 
 import { Paperclip } from "lucide-react";
-import ActionCardRoot from "./action-card-root";
+import ActionRoot from "../action-root";
 
 const CardAttechment = () => {
   return (
-    <ActionCardRoot
+    <ActionRoot
       titleButton="Attechments"
       titleHeader="Attechments"
       icon={<Paperclip size={18} />}
     >
       <div></div>
-    </ActionCardRoot>
+    </ActionRoot>
   );
 };
 

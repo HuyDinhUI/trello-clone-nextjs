@@ -120,7 +120,7 @@ export const DropdownMenu = ({
 
                   <Dropdown.Portal>
                     <Dropdown.SubContent
-                      sideOffset={6}
+                      sideOffset={-350}
                       className="min-w-60 rounded bg-white dark:bg-gray-800 shadow-lg"
                     >
                       {item.elementPopup}

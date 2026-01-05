@@ -1,17 +1,17 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import ActionCardRoot from "./action-card-root";
+import ActionRoot from "../action-root";
 
 const AddToCard = () => {
   return (
-    <ActionCardRoot
+    <ActionRoot
       titleButton="Add"
       titleHeader="Add to card"
       icon={<Plus size={18} />}
     >
       <div></div>
-    </ActionCardRoot>
+    </ActionRoot>
   );
 };
 

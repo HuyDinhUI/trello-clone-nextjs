@@ -26,13 +26,14 @@ const Boards = () => {
   const { accessToken } = useAppSelector((state: RootState) => state.auth);
 
   useEffect(() => {
+    if (boards.length > 0) return
     BoardFacade.loadAll();
   }, [accessToken]);
 
   if (loading || !boards) return <SkeletonBoardsPage />;
 
   return (
-    <div className="flex-1 min-h-screen pt-4 px-30">
+    <div className="flex-1 min-h-screen pt-4 px-30 max-lg:px-10">
       {/* Starred */}
       {boards.filter((b) => b.starred).length > 0 && (
         <BoardContainer icon={<StarIcon />} title="Starred boards">
@@ -68,7 +69,7 @@ const Boards = () => {
               />
             }
             side="right"
-            sideOffset={10}
+            sideOffset={-300}
           >
             <div className="dark:bg-background">
               <CreateBoard />

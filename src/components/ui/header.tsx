@@ -17,7 +17,6 @@ import { CreateBoard } from "../boards/create-board";
 import type { MenuItem } from "@/types/menu-item/menu-item-type";
 import { HelpCircle, Settings2 } from "lucide-react";
 import { AlertDialogLogout } from "@/mock/AlertDialog-MockData";
-import API from "@/utils/axios";
 import { SkeletonHeader } from "./skeleton";
 import Link from "next/link";
 import Image from "next/image";
@@ -70,7 +69,7 @@ export const Header = () => {
       <div className="w-[20%]">
         <Link className="flex gap-2 items-center" href={"/dashboard/boards"}>
           <Image src={"/logo.svg"} width={25} height={50} alt=""></Image>
-          <span className="font-bold">Trello</span>
+          <span className="font-bold max-sm:hidden">Trello</span>
         </Link>
       </div>
       <div className="flex flex-1 justify-center gap-2">
@@ -101,8 +100,8 @@ export const Header = () => {
             onClick={() => setTheme("light")}
           />
         )}
-        <Button variant="icon" size="ic" icon={<IconBell size={20} />} />
-        <Button variant="icon" size="ic" icon={<IconHelpCircle size={20} />} />
+        {/* <Button variant="icon" size="ic" icon={<IconBell size={20} />} />
+        <Button variant="icon" size="ic" icon={<IconHelpCircle size={20} />} /> */}
         <DropdownMenu
           label="Account"
           side="bottom"

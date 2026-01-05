@@ -1,17 +1,17 @@
 "use client";
 
 import { SquareCheckBig } from "lucide-react";
-import ActionCardRoot from "./action-card-root";
+import ActionRoot from "../action-root";
 
 const CardChecklist = () => {
   return (
-    <ActionCardRoot
+    <ActionRoot
       titleButton="Checklists"
       titleHeader="Checklists"
       icon={<SquareCheckBig size={18} />}
     >
       <div></div>
-    </ActionCardRoot>
+    </ActionRoot>
   );
 };
 

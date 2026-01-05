@@ -35,7 +35,7 @@ const FormLogin = () => {
 
   return (
     <form
-      className={`w-full p-10 ${loading ? "pointer-events-none" : ""}`}
+      className={`w-full sm:p-10 p-7 ${loading ? "pointer-events-none" : ""}`}
       onSubmit={form.handleSubmit(submitLogin)}
     >
       <div className="text-center mb-5">

@@ -81,7 +81,7 @@ export const BoardContainer = ({
         {icon}
         <span className="font-bold text-[15px]">{title}</span>
       </div>
-      <div className="grid grid-cols-4 gap-5">{children}</div>
+      <div className="grid xl:grid-cols-4 md:grid-cols-2 gap-5">{children}</div>
     </div>
   );
 };
