@@ -1,6 +1,6 @@
 "use client";
 
-import { UserFacade } from "@/app/facades/user.facade";
+import { UserFacade } from "@/facades/user.facade";
 import { RootState } from "@/store";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";

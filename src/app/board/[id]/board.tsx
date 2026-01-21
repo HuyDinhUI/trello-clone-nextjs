@@ -44,7 +44,7 @@ import {
   FormChangeVisibility,
 } from "@/components/boards/form-actions";
 import { AlertDialogCloseBoard } from "@/mock/AlertDialog-MockData";
-import { BoardFacade } from "@/app/facades/board.facade";
+import { BoardFacade } from "@/facades/board.facade";
 import { EntityId } from "@reduxjs/toolkit";
 import {
   boardsSelectors,
@@ -52,7 +52,7 @@ import {
 } from "@/store/board/board.selectors";
 import { findColumnByCardId, getNewCardIndex } from "@/utils/helper";
 import { moveCard } from "@/store/board/board.slice";
-import { CardFacade } from "@/app/facades/card.facade";
+import { CardFacade } from "@/facades/card.facade";
 
 const TYPE_ACTIVE_DND = {
   COLUMN: "T_COLUMN",

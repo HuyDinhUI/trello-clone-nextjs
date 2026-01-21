@@ -12,7 +12,7 @@ import { RegisterValidation } from "@/validators/auth.validator";
 import FieldError from "@/components/ui/field-error";
 import { FieldLabel } from "@/components/ui/field-label";
 import { RegisterBody } from "@/types/auth.type";
-import { AuthFacade } from "@/app/facades/auth.facade";
+import { AuthFacade } from "@/facades/auth.facade";
 import { useAppSelector } from "@/hooks/useRedux";
 import { RootState } from "@/store";
 import { Spinner } from "@/components/ui/loading";

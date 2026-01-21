@@ -17,7 +17,7 @@ import {
   CardAttechment,
   CardDate,
 } from "@/components/popover-action/actions-card/index";
-import { CardFacade } from "@/app/facades/card.facade";
+import { CardFacade } from "@/facades/card.facade";
 
 type CardDetailProps = {
   data: Card;

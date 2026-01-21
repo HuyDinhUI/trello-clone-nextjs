@@ -14,8 +14,8 @@ import { Card, Column as ColumnType } from "@/types/board.type";
 import { useAppSelector } from "@/hooks/useRedux";
 import { RootState } from "@/store";
 import { EntityId } from "@reduxjs/toolkit";
-import { ColumnFacade } from "@/app/facades/column.facade";
-import { CardFacade } from "@/app/facades/card.facade";
+import { ColumnFacade } from "@/facades/column.facade";
+import { CardFacade } from "@/facades/card.facade";
 
 type ColummsProps = {
   label: string;

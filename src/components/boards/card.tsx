@@ -13,7 +13,7 @@ import { Dialog } from "../ui/dialog";
 import { CardDetail } from "./card-detail";
 import { Card as CardType } from "@/types/board.type";
 import { EntityId } from "@reduxjs/toolkit";
-import { CardFacade } from "@/app/facades/card.facade";
+import { CardFacade } from "@/facades/card.facade";
 import { useAppSelector } from "@/hooks/useRedux";
 import { RootState } from "@/store";
 import { cardsSelectors } from "@/store/board/board.selectors";

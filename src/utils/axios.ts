@@ -1,7 +1,7 @@
 
 import axios from 'axios'
 import { getPersistedAuth } from './helper'
-import { AuthFacade } from '@/app/facades/auth.facade'
+import { AuthFacade } from '@/facades/auth.facade'
 
 
 const API = axios.create({

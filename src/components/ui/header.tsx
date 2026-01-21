@@ -22,7 +22,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useAppSelector } from "@/hooks/useRedux";
 import { RootState } from "@/store";
-import { AuthFacade } from "@/app/facades/auth.facade";
+import { AuthFacade } from "@/facades/auth.facade";
 
 export const Header = () => {
   const [theme, setTheme] = useState<string | null>("light");

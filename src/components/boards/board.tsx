@@ -4,7 +4,7 @@ import { type ReactNode } from "react";
 import { IconStar, IconStarFilled } from "@tabler/icons-react";
 import Link from "next/link";
 import { Board } from "@/types/board.type";
-import { BoardFacade } from "@/app/facades/board.facade";
+import { BoardFacade } from "@/facades/board.facade";
 
 type BoardVariant = "default" | "primary";
 

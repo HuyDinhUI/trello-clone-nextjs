@@ -1,6 +1,6 @@
 "use client"
 
-import { AuthFacade } from "@/app/facades/auth.facade"
+import { AuthFacade } from "@/facades/auth.facade"
 import { Spinner } from "@/components/ui/loading"
 import { useAppSelector } from "@/hooks/useRedux"
 import { RootState } from "@/store"

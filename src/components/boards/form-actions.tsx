@@ -6,7 +6,7 @@ import Image from "next/image";
 import AlertDialogDemo from "../ui/alert-dialog";
 import { boardsSelectors } from "@/store/board/board.selectors";
 import { useAppSelector } from "@/hooks/useRedux";
-import { BoardFacade } from "@/app/facades/board.facade";
+import { BoardFacade } from "@/facades/board.facade";
 
 export const FormChangeVisibility = () => {
   const board = useAppSelector((state: RootState) => boardsSelectors.selectAll(state))

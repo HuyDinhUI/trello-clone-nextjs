@@ -14,7 +14,7 @@ import { boardsSelectors } from "@/store/board/board.selectors";
 import { Board } from "@/types/board.type";
 import { Clock, Rocket, StarIcon } from "lucide-react";
 import { useEffect } from "react";
-import { BoardFacade } from "@/app/facades/board.facade";
+import { BoardFacade } from "@/facades/board.facade";
 import { SkeletonBoardsPage } from "@/components/ui/skeleton";
 
 const Boards = () => {
