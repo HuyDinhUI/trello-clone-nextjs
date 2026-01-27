@@ -1,8 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Popover } from "@/components/ui/popover";
 import { ReactNode } from "react";
+import { StackPopover } from "../ui/popover-stack/popover-root";
+import { PopoverTrigger } from "../ui/popover-stack/popover";
+import { StackPopoverContent } from "../ui/popover-stack/popover-content";
+import { StackPopoverItem } from "../ui/popover-stack/popover-item";
 
 type props = {
   children: ReactNode;
@@ -11,22 +14,20 @@ type props = {
   icon: ReactNode;
 };
 
-const ActionRoot = ({
-  children,
-  titleButton,
-  titleHeader,
-  icon,
-}: props) => {
+const ActionRoot = ({ children, titleButton, titleHeader, icon }: props) => {
   return (
-    <Popover
-      side="bottom"
-      trigger={<Button size="sm" title={titleButton} icon={icon} />}
-    >
-      <div className="p-2 w-70 min-h-50">
-        <header className="text-center font-bold">{titleHeader}</header>
-        <main>{children}</main>
-      </div>
-    </Popover>
+    <StackPopover>
+      <PopoverTrigger asChild>
+        <Button size="sm" title={titleButton} icon={icon} />
+      </PopoverTrigger>
+
+      <StackPopoverContent>
+        <StackPopoverItem>
+          <header className="text-center text-sm py-3 font-bold">{titleHeader}</header>
+          {children}
+        </StackPopoverItem>
+      </StackPopoverContent>
+    </StackPopover>
   );
 };
 

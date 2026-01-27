@@ -9,6 +9,7 @@ export function generatePlaceholdeCard(column: any) {
         cover: "",
         description: "",
         attachments: [],
+        tag: [],
         joined: []
         }
 }

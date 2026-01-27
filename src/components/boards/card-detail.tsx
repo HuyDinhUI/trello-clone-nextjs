@@ -1,7 +1,7 @@
 "use client";
 
 import CheckboxDemo from "../ui/checkbox";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Popover } from "../ui/popover";
 import { Button } from "../ui/button";
 import { Ellipsis, Image as Img, TextAlignStart } from "lucide-react";
@@ -10,14 +10,9 @@ import Image from "next/image";
 import "quill/dist/quill.snow.css";
 import Editor from "../ui/editor";
 import { Card } from "@/types/board.type";
-import {
-  AddToCard,
-  CardLabel,
-  CardChecklist,
-  CardAttechment,
-  CardDate,
-} from "@/components/popover-action/actions-card/index";
 import { CardFacade } from "@/facades/card.facade";
+import ActionCard from "../popover-action/actions-card";
+import { LabelFacade } from "@/facades/label.facade";
 
 type CardDetailProps = {
   data: Card;
@@ -26,6 +21,9 @@ type CardDetailProps = {
 export const CardDetail = ({ data }: CardDetailProps) => {
   const [isOpenForm, setIsOpenForm] = useState<boolean>(false);
 
+  useEffect(() => {
+    LabelFacade.loadAll();
+  }, []);
   return (
     <div className={`flex flex-col max-h-dvh bg-white rounded-xl`}>
       {/* cover */}
@@ -59,7 +57,11 @@ export const CardDetail = ({ data }: CardDetailProps) => {
                     {COVER_COLOR.map((c, i) => (
                       <Image
                         onClick={() =>
-                          CardFacade.changeCoverCard(data._id, c.url, data.columnId)
+                          CardFacade.changeCoverCard(
+                            data._id,
+                            c.url,
+                            data.columnId,
+                          )
                         }
                         key={i}
                         src={c.url}
@@ -77,7 +79,11 @@ export const CardDetail = ({ data }: CardDetailProps) => {
                     {COVER_PHOTOS.map((c, i) => (
                       <Image
                         onClick={() =>
-                          CardFacade.changeCoverCard(data._id, c.url, data.columnId)
+                          CardFacade.changeCoverCard(
+                            data._id,
+                            c.url,
+                            data.columnId,
+                          )
                         }
                         key={i}
                         src={c.url}
@@ -108,7 +114,7 @@ export const CardDetail = ({ data }: CardDetailProps) => {
         {data?.cover && (
           <span
             onClick={() =>
-              CardFacade.changeCoverCard(data._id, '', data.columnId)
+              CardFacade.changeCoverCard(data._id, "", data.columnId)
             }
             className="absolute hidden group-hover:block bottom-2 right-3 text-sm bg-white rounded-md p-1 cursor-pointer"
           >
@@ -132,11 +138,29 @@ export const CardDetail = ({ data }: CardDetailProps) => {
           <div className="px-5 flex gap-5">
             <div className="w-5"></div>
             <div className="flex gap-2 items-center">
-              <AddToCard/>
-              <CardLabel/>
-              <CardDate/>
-              <CardChecklist/>
-              <CardAttechment/>
+              <ActionCard CardItem={data} />
+            </div>
+          </div>
+          {/*  */}
+          <div className="px-5 flex gap-5">
+            <div className="w-5"></div>
+            <div>
+              {/* Members */}
+              <div></div>
+              {/* Labels */}
+              {data.tag.length > 0 && (
+                <div className="flex gap-1">
+                  {data.tag.map((item) => (
+                    <div
+                      key={item._id}
+                      className="h-7 min-w-10 px-2 flex items-center font-bold rounded-sm"
+                      style={{ backgroundColor: `${item.color.code}` }}
+                    >
+                      {item.title}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           {/* description */}

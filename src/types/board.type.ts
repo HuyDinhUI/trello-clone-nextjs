@@ -30,6 +30,14 @@ type checklist = {
   checked: boolean;
 };
 
+export interface Tag extends MongoEntity {
+  title: string | null
+  color: {
+    name: string
+    code: string
+  }
+}
+
 export interface Card extends MongoEntity {
   label: string;
   status: boolean;
@@ -38,6 +46,7 @@ export interface Card extends MongoEntity {
   description: string;
   attachments: string[];
   checklist: checklist[];
+  tag: Tag[]
   joined: User[];
   FE_placeholderCard?: boolean;
   isTemp?: boolean

@@ -6,45 +6,43 @@ import {
   deleteCard,
   deleteColumn,
   setColumn,
+  toggleLabel,
   updateBoard,
   updateCard,
   updateColumn,
 } from "./board.slice";
 import { ColumnService } from "@/services/column-service";
 import { CardService } from "@/services/card-service";
-import { Column } from "@/types/board.type";
+import { Column, Tag } from "@/types/board.type";
 
 //=======================================================//
 //================== BOARD THUNK =======================//
 //=====================================================//
 
-export const fetchAllBoard = createAsyncThunk(
-  "board/fetchAll",
-  async () => {
-    const res = await BoardService.getBoards()
-    return res.data
-  }
-)
+export const fetchAllBoard = createAsyncThunk("board/fetchAll", async () => {
+  const res = await BoardService.getBoards();
+  return res.data;
+});
 
 export const fetchBoard = createAsyncThunk(
   "board/fetch",
   async (id: EntityId) => {
     const res = await BoardService.getBoard(id);
     return res.data;
-  }
+  },
 );
 
 export const changeCover = createAsyncThunk(
   "board/changeCover",
   async (payload: { id: EntityId; cover: string }, { dispatch }) => {
     dispatch(
-      updateBoard({ id: payload.id, changes: { cover: payload.cover } })
+      updateBoard({ id: payload.id, changes: { cover: payload.cover } }),
     );
 
     const res = await BoardService.updateCover(payload.id, payload.cover);
 
     return res.data;
-  }
+  },
 );
 
 export const reorderColumnAsync = createAsyncThunk(
@@ -57,7 +55,7 @@ export const reorderColumnAsync = createAsyncThunk(
     });
 
     return res.data;
-  }
+  },
 );
 
 export const starredAsync = createAsyncThunk(
@@ -67,13 +65,13 @@ export const starredAsync = createAsyncThunk(
       updateBoard({
         id: payload.boardId,
         changes: { starred: payload.starred },
-      })
+      }),
     );
 
     const res = await BoardService.starred(payload.boardId, payload.starred);
 
     return res.data;
-  }
+  },
 );
 
 export const editLabelBoardAsync = createAsyncThunk(
@@ -83,13 +81,13 @@ export const editLabelBoardAsync = createAsyncThunk(
       updateBoard({
         id: payload.boardId,
         changes: { title: payload.title },
-      })
+      }),
     );
 
     const res = await BoardService.editLabel(payload.boardId, payload.title);
 
     return res.data;
-  }
+  },
 );
 
 //=======================================================//
@@ -100,27 +98,27 @@ export const addColumnAsync = createAsyncThunk(
   "board/addColumn",
   async (
     payload: { tempId: EntityId; title: string; boardId: EntityId },
-    { dispatch }
+    { dispatch },
   ) => {
     dispatch(addColumn(payload.tempId, payload.title, payload.boardId));
 
     const res = await ColumnService.createColumn(payload);
 
     return { realId: res.data._id, tempId: payload.tempId };
-  }
+  },
 );
 
 export const editLabelColumnAsync = createAsyncThunk(
   "board/editLabelColumn",
   async (payload: { id: EntityId; title: string }, { dispatch }) => {
     dispatch(
-      updateColumn({ id: payload.id, changes: { title: payload.title } })
+      updateColumn({ id: payload.id, changes: { title: payload.title } }),
     );
 
     const res = await ColumnService.updateColumn(payload);
 
     return res.data;
-  }
+  },
 );
 
 export const deleteColumnAsync = createAsyncThunk(
@@ -131,7 +129,7 @@ export const deleteColumnAsync = createAsyncThunk(
     const res = await ColumnService.deleteColumn(id);
 
     return res.data;
-  }
+  },
 );
 
 //=======================================================//
@@ -142,7 +140,7 @@ export const addCardAsync = createAsyncThunk(
   "board/addCard",
   async (
     payload: { tempId: EntityId; label: string; columnId: EntityId },
-    { dispatch }
+    { dispatch },
   ) => {
     dispatch(addCard(payload.tempId, payload.label, payload.columnId));
 
@@ -152,17 +150,17 @@ export const addCardAsync = createAsyncThunk(
       tempId: payload.tempId,
       columnId: payload.columnId,
     };
-  }
+  },
 );
 
 export const markedCardAsync = createAsyncThunk(
   "board/markCard",
   async (
     payload: { id: EntityId; marked: boolean; columnId: EntityId },
-    { dispatch }
+    { dispatch },
   ) => {
     dispatch(
-      updateCard({ id: payload.id, changes: { status: payload.marked } })
+      updateCard({ id: payload.id, changes: { status: payload.marked } }),
     );
 
     const res = await CardService.updateContent({
@@ -172,20 +170,20 @@ export const markedCardAsync = createAsyncThunk(
     });
 
     return res.data;
-  }
+  },
 );
 
 export const deleteCardAsync = createAsyncThunk(
   "board/deleteCard",
   async (payload: { CardId: EntityId; columnId: EntityId }, { dispatch }) => {
     dispatch(
-      deleteCard({ CardId: payload.CardId, columnId: payload.columnId })
+      deleteCard({ CardId: payload.CardId, columnId: payload.columnId }),
     );
 
     const res = await CardService.deleteCard(payload.CardId);
 
     return res.data;
-  }
+  },
 );
 
 export const updateOrderAndPositionAsync = createAsyncThunk(
@@ -197,17 +195,17 @@ export const updateOrderAndPositionAsync = createAsyncThunk(
     });
 
     return res.data;
-  }
+  },
 );
 
 export const changeCoverCardAsync = createAsyncThunk(
   "board/changeCoverCard",
   async (
     payload: { CardId: EntityId; cover: string; columnId: EntityId },
-    { dispatch }
+    { dispatch },
   ) => {
     dispatch(
-      updateCard({ id: payload.CardId, changes: { cover: payload.cover } })
+      updateCard({ id: payload.CardId, changes: { cover: payload.cover } }),
     );
 
     const res = await CardService.updateContent({
@@ -217,5 +215,13 @@ export const changeCoverCardAsync = createAsyncThunk(
     });
 
     return res.data;
-  }
+  },
+);
+
+export const toggleLabelAsync = createAsyncThunk(
+  "board/toggleLabel",
+  async (payload: { CardId: EntityId; label: Tag }, { dispatch }) => {
+    console.log(payload)
+    dispatch(toggleLabel({ CardId: payload.CardId, label: payload.label }));
+  },
 );

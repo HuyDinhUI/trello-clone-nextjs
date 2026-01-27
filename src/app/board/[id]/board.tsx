@@ -31,12 +31,10 @@ import { useParams } from "next/navigation";
 import { useAppSelector } from "@/hooks/useRedux";
 import { RootState, store } from "@/store";
 import { SkeletonBoardPage } from "@/components/ui/skeleton";
-import { customCollisionDetection } from "@/lib/collisionDetection";
+import { customCollisionDetection } from "@/utils/collisionDetection";
 import { Input } from "@/components/ui/input";
 import { Board as BoardType } from "@/types/board.type";
 import { IconStar, IconStarFilled } from "@tabler/icons-react";
-import { BoardService } from "@/services/board-service";
-import { UserService } from "@/services/user-service";
 import { DropdownMenu } from "@/components/ui/dropdown";
 import { MenuItem } from "@/types/menu-item/menu-item-type";
 import {
@@ -53,6 +51,7 @@ import {
 import { findColumnByCardId, getNewCardIndex } from "@/utils/helper";
 import { moveCard } from "@/store/board/board.slice";
 import { CardFacade } from "@/facades/card.facade";
+import { UserFacade } from "@/facades/user.facade";
 
 const TYPE_ACTIVE_DND = {
   COLUMN: "T_COLUMN",
@@ -62,13 +61,13 @@ const TYPE_ACTIVE_DND = {
 const Board = () => {
   const { id } = useParams();
   const board = useAppSelector((state: RootState) =>
-    boardsSelectors.selectById(state, id as EntityId)
+    boardsSelectors.selectById(state, id as EntityId),
   );
   const columns = useAppSelector((state: RootState) =>
-    columnsSelectors.selectAll(state)
+    columnsSelectors.selectAll(state),
   );
   const { loading, currenBoardId } = useAppSelector(
-    (state: RootState) => state.board
+    (state: RootState) => state.board,
   );
   const pointerSensor = useSensor(PointerSensor, {
     activationConstraint: {
@@ -77,10 +76,10 @@ const Board = () => {
   });
   const sensors = useSensors(pointerSensor);
   const [activeDragItemId, setActiveDragItemId] = useState<EntityId | null>(
-    null
+    null,
   );
   const [activeDragItemType, setActiveDragItemType] = useState<EntityId | null>(
-    null
+    null,
   );
   const [activeDragItemData, setActiveDragItemData] = useState<any>(null);
 
@@ -90,22 +89,17 @@ const Board = () => {
   }, [id]);
 
   // useEffect(() => {
-  //   if (!board._id) return;
+  //   if (!board) return;
 
-  //   dispatch(updateRecentBoard({ board }));
-  //   const handleUpdateRecent = async () => {
-  //     await UserService.updateRecentBoardAsync(board._id!);
-  //   };
-
-  //   handleUpdateRecent();
-  // }, [dispatch, board]);
+  //   UserFacade.updateRecentBoard(board);
+  // }, []);
 
   const HandleDragStart = (event: DragStartEvent) => {
     setActiveDragItemId(event?.active?.id as EntityId);
     setActiveDragItemType(
       event?.active?.data?.current?.columnId
         ? TYPE_ACTIVE_DND.CARD
-        : TYPE_ACTIVE_DND.COLUMN
+        : TYPE_ACTIVE_DND.COLUMN,
     );
     setActiveDragItemData(event?.active?.data?.current);
   };
@@ -126,7 +120,7 @@ const Board = () => {
     if (!activeColumn || !overColumn) return;
 
     const overCardIndex = overColumn?.cards?.findIndex(
-      (card) => card._id === overCardId
+      (card) => card._id === overCardId,
     );
 
     const newIndex = getNewCardIndex({
@@ -141,7 +135,7 @@ const Board = () => {
         fromColumnId: activeColumn._id,
         toColumnId: overColumn._id,
         newIndex,
-      })
+      }),
     );
   };
 
@@ -159,7 +153,7 @@ const Board = () => {
       const newIndex = columns?.findIndex((c) => c._id === over.id);
 
       const NewColumnData = arrayMove(columns, oldIndex, newIndex);
-      BoardFacade.reorderColumn(currenBoardId!, NewColumnData)
+      BoardFacade.reorderColumn(currenBoardId!, NewColumnData);
     }
 
     setActiveDragItemId(null);
@@ -184,7 +178,6 @@ const Board = () => {
         <div
           className="relative flex-1 h-full flex flex-col overflow-hidden bg-cover bg-no-repeat bg-center"
           style={{ backgroundImage: `url('${board?.cover}')` }}
-          
         >
           <HeaderBoard board={board} />
           <div className="flex-1 relative overflow-x-auto scroll-smooth">
@@ -230,13 +223,13 @@ const HeaderBoard = ({ board }: props) => {
   const input = useRef<HTMLInputElement>(null);
 
   const handleStarred = async (starred: boolean) => {
-    BoardFacade.starred(board._id, starred)
+    BoardFacade.starred(board._id, starred);
   };
 
   useEffect(() => {
     const handleClickOutside = async (event: MouseEvent) => {
       if (input.current && !input.current.contains(event.target as Node)) {
-        BoardFacade.editLabel(board._id, input.current.value)
+        BoardFacade.editLabel(board._id, input.current.value);
         setOpenInput(false);
       }
     };

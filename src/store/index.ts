@@ -4,6 +4,7 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import boardReducer from "./board/board.slice";
 import userReducer from "./user/user.slice";
 import authReducer from "./auth/auth.slice"
+import labelReducer from "./label/label.slice"
 import storage from "redux-persist/lib/storage";
 import {
   persistReducer,
@@ -25,7 +26,8 @@ const persistConfig = {
 const rootReducer = combineReducers({
   user: userReducer,
   board: boardReducer,
-  auth: authReducer
+  auth: authReducer,
+  label: labelReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -28,7 +28,7 @@ const Boards = () => {
   useEffect(() => {
     if (boards.length > 0) return
     BoardFacade.loadAll();
-  }, [accessToken]);
+  }, [accessToken, boards]);
 
   if (loading || !boards) return <SkeletonBoardsPage />;
 

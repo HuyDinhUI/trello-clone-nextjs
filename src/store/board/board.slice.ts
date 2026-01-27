@@ -1,6 +1,6 @@
 import { createSlice, EntityId, PayloadAction, Update } from "@reduxjs/toolkit";
 import { boardsAdapter, cardAdapter, columnAdapter } from "./board.adapter";
-import { Board, Card, Column } from "@/types/board.type";
+import { Board, Card, Column, Tag } from "@/types/board.type";
 import {
   addCardAsync,
   addColumnAsync,
@@ -34,7 +34,7 @@ const boardSlice = createSlice({
 
     updateBoard(
       state,
-      action: PayloadAction<{ id: EntityId; changes: Partial<Board> }>
+      action: PayloadAction<{ id: EntityId; changes: Partial<Board> }>,
     ) {
       boardsAdapter.updateOne(state.boards, action.payload);
     },
@@ -93,7 +93,7 @@ const boardSlice = createSlice({
 
     updateColumn(
       state,
-      action: PayloadAction<{ id: EntityId; changes: Partial<Column> }>
+      action: PayloadAction<{ id: EntityId; changes: Partial<Column> }>,
     ) {
       columnAdapter.updateOne(state.columns, action.payload);
     },
@@ -133,6 +133,7 @@ const boardSlice = createSlice({
             attachments: [],
             checklist: [],
             joined: [],
+            tag: [],
             FE_placeholderCard: false,
             isTemp: true,
           } as Card,
@@ -142,21 +143,21 @@ const boardSlice = createSlice({
 
     updateCard(
       state,
-      action: PayloadAction<{ id: EntityId; changes: Partial<Card> }>
+      action: PayloadAction<{ id: EntityId; changes: Partial<Card> }>,
     ) {
       cardAdapter.updateOne(state.cards, action.payload);
     },
 
     deleteCard(
       state,
-      action: PayloadAction<{ CardId: EntityId; columnId: EntityId }>
+      action: PayloadAction<{ CardId: EntityId; columnId: EntityId }>,
     ) {
       cardAdapter.removeOne(state.cards, action.payload.CardId);
       columnAdapter.updateOne(state.columns, {
         id: action.payload.columnId,
         changes: {
           cards: state.columns.entities[action.payload.columnId]?.cards.filter(
-            (c) => c._id !== action.payload.CardId
+            (c) => c._id !== action.payload.CardId,
           ),
         },
       } as Update<Column, EntityId>);
@@ -169,7 +170,7 @@ const boardSlice = createSlice({
         fromColumnId: EntityId;
         toColumnId: EntityId;
         newIndex: number;
-      }>
+      }>,
     ) => {
       const { CardId, fromColumnId, toColumnId, newIndex } = action.payload;
 
@@ -180,7 +181,7 @@ const boardSlice = createSlice({
 
       fromColumn.cards = fromColumn.cards.filter((c) => c._id !== CardId);
       fromColumn.cards = fromColumn.cards.map((c: Card) =>
-        c._id === CardId ? { ...c, columnId: toColumnId } : c
+        c._id === CardId ? { ...c, columnId: toColumnId } : c,
       );
 
       if (isEmpty(fromColumn.cards)) {
@@ -195,13 +196,31 @@ const boardSlice = createSlice({
       });
 
       toColumn.cards = toColumn.cards.filter(
-        (card) => !card.FE_placeholderCard
+        (card) => !card.FE_placeholderCard,
       );
 
       toColumn.cards.splice(newIndex, 0, state.cards.entities[CardId]);
     },
-  },
 
+    toggleLabel: (
+      state,
+      action: PayloadAction<{ CardId: EntityId; label: Tag }>,
+    ) => {
+      const card = state.cards.entities[action.payload.CardId];
+      const existed = card.tag.some((t) => t._id === action.payload.label._id);
+
+      if (existed) {
+        card.tag = card.tag.filter((t) => t._id !== action.payload.label._id);
+      } else {
+        card.tag = [...card.tag, action.payload.label];
+      }
+
+      cardAdapter.updateOne(state.cards, {
+        id: action.payload.CardId,
+        changes: card,
+      });
+    },
+  },
   extraReducers: (builder) => {
     builder
 
@@ -240,6 +259,7 @@ const boardSlice = createSlice({
               description: card.description,
               attachments: card.attachments,
               checklist: card.checklist,
+              tag: card.tag ?? [],
               joined: card.joined,
             });
           }
@@ -285,7 +305,7 @@ const boardSlice = createSlice({
               (c) =>
                 c._id === action.payload.tempId
                   ? { ...c, _id: action.payload.realId }
-                  : c
+                  : c,
             ),
           },
         } as Update<Column, EntityId>);
@@ -305,6 +325,7 @@ export const {
   updateCard,
   deleteCard,
   moveCard,
+  toggleLabel,
 } = boardSlice.actions;
 
 export default boardSlice.reducer;

@@ -1,17 +1,10 @@
 "use client";
 
-import { Paperclip } from "lucide-react";
-import ActionRoot from "../action-root";
+import { EntityId } from "@reduxjs/toolkit";
 
 const CardAttechment = () => {
   return (
-    <ActionRoot
-      titleButton="Attechments"
-      titleHeader="Attechments"
-      icon={<Paperclip size={18} />}
-    >
-      <div></div>
-    </ActionRoot>
+    <div></div>
   );
 };
 
