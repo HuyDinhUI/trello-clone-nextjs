@@ -2,7 +2,6 @@ import { createSlice, PayloadAction, EntityId } from "@reduxjs/toolkit";
 import { labelsAdapter } from "./label.adapter";
 import { Tag } from "@/types/board.type";
 import { fetchAllLabels } from "./label.thunks";
-import { toast } from "react-toastify";
 
 const initialState = {
   labels: labelsAdapter.getInitialState(),

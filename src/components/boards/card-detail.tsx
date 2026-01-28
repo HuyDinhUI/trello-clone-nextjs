@@ -13,6 +13,7 @@ import { Card } from "@/types/board.type";
 import { CardFacade } from "@/facades/card.facade";
 import ActionCard from "../popover-action/actions-card";
 import { LabelFacade } from "@/facades/label.facade";
+import moment from "moment";
 
 type CardDetailProps = {
   data: Card;
@@ -144,9 +145,9 @@ export const CardDetail = ({ data }: CardDetailProps) => {
           {/*  */}
           <div className="px-5 flex gap-5">
             <div className="w-5"></div>
-            <div>
+            <div className="flex gap-2">
               {/* Members */}
-              <div></div>
+        
               {/* Labels */}
               {data.tag.length > 0 && (
                 <div className="flex gap-1">
@@ -159,6 +160,11 @@ export const CardDetail = ({ data }: CardDetailProps) => {
                       {item.title}
                     </div>
                   ))}
+                </div>
+              )}
+              {(data.date.dueDate || data.date.startDate) && (
+                <div className="h-7 min-w-10 px-2 flex items-center font-bold rounded-sm bg-gray-200">
+                  {moment(data.date.startDate).format("MMM D")} - {moment(data.date.dueDate).format("MMM D, h:mm a")}
                 </div>
               )}
             </div>

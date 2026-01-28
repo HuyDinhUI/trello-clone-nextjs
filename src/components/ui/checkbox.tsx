@@ -33,7 +33,7 @@ const CheckboxDemo = ({
   color = "green",
   shape = "circle"
 }: CheckboxProps) => (
-  <form>
+  <div>
     <div className="flex items-center">
       <Checkbox.Root
         className={`${classname} ${
@@ -49,7 +49,7 @@ const CheckboxDemo = ({
         </Checkbox.Indicator>
       </Checkbox.Root>
     </div>
-  </form>
+  </div>
 );
 
 export default CheckboxDemo;

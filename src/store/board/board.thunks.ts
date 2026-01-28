@@ -10,10 +10,12 @@ import {
   updateBoard,
   updateCard,
   updateColumn,
+  updateDate,
 } from "./board.slice";
 import { ColumnService } from "@/services/column-service";
 import { CardService } from "@/services/card-service";
 import { Column, Tag } from "@/types/board.type";
+import { CardDate } from "@/types/card-date.type";
 
 //=======================================================//
 //================== BOARD THUNK =======================//
@@ -221,7 +223,13 @@ export const changeCoverCardAsync = createAsyncThunk(
 export const toggleLabelAsync = createAsyncThunk(
   "board/toggleLabel",
   async (payload: { CardId: EntityId; label: Tag }, { dispatch }) => {
-    console.log(payload)
     dispatch(toggleLabel({ CardId: payload.CardId, label: payload.label }));
+  },
+);
+
+export const updateDateAsync = createAsyncThunk(
+  "board/updateDate",
+  async (payload: { CardId: EntityId; date: CardDate }, { dispatch }) => {
+    dispatch(updateDate({ CardId: payload.CardId, date: payload.date }));
   },
 );

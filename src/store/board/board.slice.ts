@@ -9,6 +9,7 @@ import {
 } from "./board.thunks";
 import { isEmpty } from "lodash";
 import { generatePlaceholdeCard } from "@/utils/formatters";
+import { CardDate } from "@/types/card-date.type";
 
 const initialState = {
   boards: boardsAdapter.getInitialState(),
@@ -132,6 +133,12 @@ const boardSlice = createSlice({
             description: "",
             attachments: [],
             checklist: [],
+            date: {
+              startDate: null,
+              dueDate: null,
+              recurring: "Daily",
+              reminder: "None",
+            },
             joined: [],
             tag: [],
             FE_placeholderCard: false,
@@ -220,6 +227,16 @@ const boardSlice = createSlice({
         changes: card,
       });
     },
+
+    updateDate: (
+      state,
+      action: PayloadAction<{ CardId: EntityId; date: CardDate }>,
+    ) => {
+      cardAdapter.updateOne(state.cards, {
+        id: action.payload.CardId,
+        changes: { date: action.payload.date },
+      });
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -259,6 +276,12 @@ const boardSlice = createSlice({
               description: card.description,
               attachments: card.attachments,
               checklist: card.checklist,
+              date: card.date ?? {
+                startDate: null,
+                dueDate: null,
+                recurring: "Never",
+                reminder: "None",
+              },
               tag: card.tag ?? [],
               joined: card.joined,
             });
@@ -326,6 +349,7 @@ export const {
   deleteCard,
   moveCard,
   toggleLabel,
+  updateDate
 } = boardSlice.actions;
 
 export default boardSlice.reducer;

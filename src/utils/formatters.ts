@@ -1,4 +1,6 @@
-export function generatePlaceholdeCard(column: any) {
+import { Card } from "@/types/board.type"
+
+export function generatePlaceholdeCard(column: any):Card {
     return {
         _id: column._id+'-placeholder-card',
         label: '',
@@ -9,6 +11,12 @@ export function generatePlaceholdeCard(column: any) {
         cover: "",
         description: "",
         attachments: [],
+        date: {
+            startDate: null,
+            dueDate: null,
+            recurring: "Daily",
+            reminder: "None"
+        },
         tag: [],
         joined: []
         }

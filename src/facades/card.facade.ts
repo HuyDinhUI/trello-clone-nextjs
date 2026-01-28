@@ -5,9 +5,11 @@ import {
   deleteCardAsync,
   markedCardAsync,
   toggleLabelAsync,
+  updateDateAsync,
   updateOrderAndPositionAsync,
 } from "@/store/board/board.thunks";
 import { Column, Tag } from "@/types/board.type";
+import { CardDate } from "@/types/card-date.type";
 import { EntityId } from "@reduxjs/toolkit";
 import { v4 as uuid } from "uuid";
 
@@ -35,5 +37,9 @@ export const CardFacade = {
 
   toggleLabel(CardId: EntityId, label: Tag) {
     store.dispatch(toggleLabelAsync({ CardId, label }));
+  },
+
+  updateDate(CardId: EntityId, date: CardDate) {
+    store.dispatch(updateDateAsync({ CardId, date }));
   },
 };

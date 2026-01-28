@@ -1,8 +1,9 @@
 import { EntityId } from "@reduxjs/toolkit";
 import { User } from "./user.type";
+import { CardDate } from "./card-date.type";
 
 interface MongoEntity {
-  _id: EntityId
+  _id: EntityId;
 }
 
 export interface Board extends MongoEntity {
@@ -13,16 +14,16 @@ export interface Board extends MongoEntity {
   memberIds: User[];
   columns: string[];
   columnsOrder: Column[];
-  starred: boolean
-  closed: boolean
-  dateLastView: string
+  starred: boolean;
+  closed: boolean;
+  dateLastView: string;
 }
 
 export interface Column extends MongoEntity {
   title: string;
   boardId: EntityId;
   cards: Card[];
-  isTemp?: boolean
+  isTemp?: boolean;
 }
 
 type checklist = {
@@ -31,11 +32,11 @@ type checklist = {
 };
 
 export interface Tag extends MongoEntity {
-  title: string | null
+  title: string | null;
   color: {
-    name: string
-    code: string
-  }
+    name: string;
+    code: string;
+  };
 }
 
 export interface Card extends MongoEntity {
@@ -46,11 +47,9 @@ export interface Card extends MongoEntity {
   description: string;
   attachments: string[];
   checklist: checklist[];
-  tag: Tag[]
+  date: CardDate
+  tag: Tag[];
   joined: User[];
   FE_placeholderCard?: boolean;
-  isTemp?: boolean
+  isTemp?: boolean;
 }
-
-
-

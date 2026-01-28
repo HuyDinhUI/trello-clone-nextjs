@@ -5,7 +5,7 @@ import {
   verticalListSortingStrategy,
   useSortable,
 } from "@dnd-kit/sortable";
-import { Edit, Paperclip, SquareCheckBig, Text, Trash } from "lucide-react";
+import { Clock, Edit, Paperclip, SquareCheckBig, Text, Trash } from "lucide-react";
 import { CSS } from "@dnd-kit/utilities";
 import CheckboxDemo from "../ui/checkbox";
 import { Button } from "../ui/button";
@@ -17,6 +17,8 @@ import { CardFacade } from "@/facades/card.facade";
 import { useAppSelector } from "@/hooks/useRedux";
 import { RootState } from "@/store";
 import { cardsSelectors } from "@/store/board/board.selectors";
+import moment from "moment";
+
 
 type CardProps = {
   CardId: EntityId;
@@ -96,7 +98,7 @@ export const Card = ({ CardId }: CardProps) => {
                 }}
                 checked={item.status}
               />
-              <label>{item.label}</label>
+              <span>{item.label}</span>
             </div>
             <div className="flex gap-2 items-center opacity-0 group-hover:opacity-100 transition-opacity duration-100 absolute top-1 right-1">
               <Button
@@ -115,7 +117,13 @@ export const Card = ({ CardId }: CardProps) => {
             </div>
           </div>
 
-          <div className="flex gap-3 items-center px-6">
+          <div className="flex gap-3 items-center px-5">
+            {(item.date.startDate || item.date.dueDate) && (
+              <div className="flex gap-1 items-center text-sm pb-2">
+                <Clock size={15}/>
+                {moment(item.date.startDate).format("MMM D")} - {moment(item.date.dueDate).format("MMM D")}
+              </div>
+            )}
             {item.description && (
               <div className="pb-2">
                 <Text size={15} />

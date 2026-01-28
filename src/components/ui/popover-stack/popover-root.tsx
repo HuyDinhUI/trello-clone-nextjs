@@ -12,6 +12,8 @@ type StackPopoverContextType = {
   stack: Page[];
   push: (page: Page) => void;
   pop: () => void;
+  // open: boolean
+  // setOpen: (v: boolean) => void
 };
 
 export const StackPopoverContext =
@@ -19,6 +21,7 @@ export const StackPopoverContext =
 
 export function StackPopover({ children }: { children: React.ReactNode }) {
   const [stack, setStack] = useState<Page[]>([]);
+  // const [open, setOpen] = useState<boolean>(false)
 
   const push = (page: Page) => setStack((prev) => [...prev, page]);
 

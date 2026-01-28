@@ -70,7 +70,12 @@ const authSlice = createSlice({
 
 
         .addCase(refresh.fulfilled, (state, action) => {
+            state.loading = false
             state.accessToken = action.payload.accessToken
+        })
+        .addCase(refresh.rejected, (state, action) => {
+            state.loading = false
+            state.error = action.error.message!
         })
 
     }

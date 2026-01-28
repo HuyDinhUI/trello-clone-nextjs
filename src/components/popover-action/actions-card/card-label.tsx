@@ -6,17 +6,16 @@ import { StackPopoverItem } from "@/components/ui/popover-stack/popover-item";
 import { CardFacade } from "@/facades/card.facade";
 import { Tag } from "@/types/board.type";
 import clsx from "clsx";
-import { Paintbrush } from "lucide-react";
+import { Check, Paintbrush } from "lucide-react";
 import { useActionCard } from ".";
 import CheckboxDemo from "@/components/ui/checkbox";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DATA_LABEL_COLORS } from "@/mock/color-label-mock";
 import { useStackPopover } from "@/components/ui/popover-stack/popover-root";
 import { useAppSelector } from "@/hooks/useRedux";
 import { RootState } from "@/store";
 import { labelsSelectors } from "@/store/label/label.selectors";
 import { LabelFacade } from "@/facades/label.facade";
-import { EntityId } from "@reduxjs/toolkit";
 
 const CardLabel = () => {
   const { CardItem } = useActionCard();
@@ -111,11 +110,10 @@ const EditLabel = ({ label }: { label: Tag }) => {
             onClick={() => setColor(item)}
             key={item.code}
             style={{ backgroundColor: `${item.code}` }}
-            className={clsx(
-              "h-8 rounded-sm",
-              color.code === item.code && "outline-blue-500 outline-2",
-            )}
-          ></div>
+            className={clsx("h-8 rounded-sm flex justify-center items-center")}
+          >
+            {color.code === item.code && <Check size={20} color="white" />}
+          </div>
         ))}
       </div>
       <hr className="border-gray-300 m-3" />
@@ -196,7 +194,7 @@ const AddLabel = () => {
           }}
           size="sm"
           variant="primary"
-          title="Save"
+          title="Create"
         />
       </div>
     </div>
