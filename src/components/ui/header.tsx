@@ -13,7 +13,7 @@ import { DropdownMenu } from "./dropdown";
 import { useEffect, useState } from "react";
 import AvatarDemo from "./avatar";
 import { Popover } from "./popover";
-import { CreateBoard } from "../boards/create-board";
+import { CreateBoard } from "../board/create-board";
 import type { MenuItem } from "@/types/menu-item/menu-item-type";
 import { HelpCircle, Settings2 } from "lucide-react";
 import { AlertDialogLogout } from "@/mock/AlertDialog-MockData";

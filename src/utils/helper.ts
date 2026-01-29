@@ -27,3 +27,8 @@ export function getPersistedAuth() {
   }
 }
 
+export const percentCalculator = (partValue: number, totalValue: number) => {
+  return (partValue / totalValue) * 100;
+}
+
+

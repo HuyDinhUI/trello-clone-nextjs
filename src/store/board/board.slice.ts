@@ -10,6 +10,7 @@ import {
 import { isEmpty } from "lodash";
 import { generatePlaceholdeCard } from "@/utils/formatters";
 import { CardDate } from "@/types/card-date.type";
+import { CheckList } from "@/types/card-checklist";
 
 const initialState = {
   boards: boardsAdapter.getInitialState(),
@@ -237,6 +238,28 @@ const boardSlice = createSlice({
         changes: { date: action.payload.date },
       });
     },
+
+    addChecklist: (
+      state,
+      action: PayloadAction<{ CardId: EntityId; checklist: CheckList }>,
+    ) => {
+      const list = state.cards.entities[action.payload.CardId].checklist;
+      cardAdapter.updateOne(state.cards, {
+        id: action.payload.CardId,
+        changes: { checklist: [...list, action.payload.checklist] },
+      });
+    },
+
+    removeChecklist: (
+      state,
+      action: PayloadAction<{ CardId: EntityId; ChecklistId: EntityId }>,
+    ) => {
+      const checklist = state.cards.entities[action.payload.CardId].checklist;
+      cardAdapter.updateOne(state.cards, {
+        id: action.payload.CardId,
+        changes: { checklist: checklist.filter((item) => !item._id) },
+      });
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -275,7 +298,7 @@ const boardSlice = createSlice({
               cover: card.cover,
               description: card.description,
               attachments: card.attachments,
-              checklist: card.checklist,
+              checklist: card.checklist ?? [],
               date: card.date ?? {
                 startDate: null,
                 dueDate: null,
@@ -349,7 +372,9 @@ export const {
   deleteCard,
   moveCard,
   toggleLabel,
-  updateDate
+  updateDate,
+  addChecklist,
+  removeChecklist
 } = boardSlice.actions;
 
 export default boardSlice.reducer;

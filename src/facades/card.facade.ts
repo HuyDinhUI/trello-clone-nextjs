@@ -1,9 +1,11 @@
 import { store } from "@/store";
 import {
   addCardAsync,
+  addChecklistAsync,
   changeCoverCardAsync,
   deleteCardAsync,
   markedCardAsync,
+  removeChecklistAsync,
   toggleLabelAsync,
   updateDateAsync,
   updateOrderAndPositionAsync,
@@ -41,5 +43,26 @@ export const CardFacade = {
 
   updateDate(CardId: EntityId, date: CardDate) {
     store.dispatch(updateDateAsync({ CardId, date }));
+  },
+
+  addChecklist(CardId: EntityId, title: string) {
+    store.dispatch(
+      addChecklistAsync({
+        CardId,
+        data: {
+          _id: uuid(),
+          title,
+          items: [],
+          process: {
+            total: 0,
+            process: 0,
+          },
+        },
+      }),
+    );
+  },
+
+  removeChecklist(CardId: EntityId, ChecklistId: EntityId) {
+    store.dispatch(removeChecklistAsync({ CardId, ChecklistId }));
   },
 };

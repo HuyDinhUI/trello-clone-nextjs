@@ -1,6 +1,6 @@
 "use client";
 
-import { ListColumns } from "@/components/boards/columns";
+import { ListColumns } from "@/components/column/columns";
 import { Button } from "@/components/ui/button";
 import {
   Ellipsis,
@@ -25,8 +25,8 @@ import {
 } from "@dnd-kit/core";
 import { useEffect, useRef, useState } from "react";
 import { arrayMove } from "@dnd-kit/sortable";
-import { Column } from "@/components/boards/columns";
-import { Card, ListCard } from "@/components/boards/card";
+import { Column } from "@/components/column/columns";
+import { Card, ListCard } from "@/components/card/card";
 import { useParams } from "next/navigation";
 import { useAppSelector } from "@/hooks/useRedux";
 import { RootState, store } from "@/store";
@@ -40,7 +40,7 @@ import { MenuItem } from "@/types/menu-item/menu-item-type";
 import {
   FormChangeCover,
   FormChangeVisibility,
-} from "@/components/boards/form-actions";
+} from "@/components/board/form-actions";
 import { AlertDialogCloseBoard } from "@/mock/AlertDialog-MockData";
 import { BoardFacade } from "@/facades/board.facade";
 import { EntityId } from "@reduxjs/toolkit";

@@ -2,9 +2,11 @@ import { BoardService } from "@/services/board-service";
 import { createAsyncThunk, EntityId } from "@reduxjs/toolkit";
 import {
   addCard,
+  addChecklist,
   addColumn,
   deleteCard,
   deleteColumn,
+  removeChecklist,
   setColumn,
   toggleLabel,
   updateBoard,
@@ -16,6 +18,7 @@ import { ColumnService } from "@/services/column-service";
 import { CardService } from "@/services/card-service";
 import { Column, Tag } from "@/types/board.type";
 import { CardDate } from "@/types/card-date.type";
+import { CheckList } from "@/types/card-checklist";
 
 //=======================================================//
 //================== BOARD THUNK =======================//
@@ -231,5 +234,27 @@ export const updateDateAsync = createAsyncThunk(
   "board/updateDate",
   async (payload: { CardId: EntityId; date: CardDate }, { dispatch }) => {
     dispatch(updateDate({ CardId: payload.CardId, date: payload.date }));
+  },
+);
+
+export const addChecklistAsync = createAsyncThunk(
+  "board/addChecklistToCard",
+  async (payload: { CardId: EntityId; data: CheckList }, { dispatch }) => {
+    dispatch(addChecklist({ CardId: payload.CardId, checklist: payload.data }));
+  },
+);
+
+export const removeChecklistAsync = createAsyncThunk(
+  "board/removeChecklist",
+  async (
+    payload: { CardId: EntityId; ChecklistId: EntityId },
+    { dispatch },
+  ) => {
+    dispatch(
+      removeChecklist({
+        CardId: payload.CardId,
+        ChecklistId: payload.ChecklistId,
+      }),
+    );
   },
 );

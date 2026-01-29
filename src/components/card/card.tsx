@@ -5,7 +5,14 @@ import {
   verticalListSortingStrategy,
   useSortable,
 } from "@dnd-kit/sortable";
-import { Clock, Edit, Paperclip, SquareCheckBig, Text, Trash } from "lucide-react";
+import {
+  Clock,
+  Edit,
+  Paperclip,
+  SquareCheckBig,
+  Text,
+  Trash,
+} from "lucide-react";
 import { CSS } from "@dnd-kit/utilities";
 import CheckboxDemo from "../ui/checkbox";
 import { Button } from "../ui/button";
@@ -18,7 +25,6 @@ import { useAppSelector } from "@/hooks/useRedux";
 import { RootState } from "@/store";
 import { cardsSelectors } from "@/store/board/board.selectors";
 import moment from "moment";
-
 
 type CardProps = {
   CardId: EntityId;
@@ -120,8 +126,9 @@ export const Card = ({ CardId }: CardProps) => {
           <div className="flex gap-3 items-center px-5">
             {(item.date.startDate || item.date.dueDate) && (
               <div className="flex gap-1 items-center text-sm pb-2">
-                <Clock size={15}/>
-                {moment(item.date.startDate).format("MMM D")} - {moment(item.date.dueDate).format("MMM D")}
+                <Clock size={15} />
+                {moment(item.date.startDate).format("MMM D")} -{" "}
+                {moment(item.date.dueDate).format("MMM D")}
               </div>
             )}
             {item.description && (
@@ -138,14 +145,23 @@ export const Card = ({ CardId }: CardProps) => {
             {item.checklist?.length > 0 && (
               <div className="flex gap-1 items-center pb-2">
                 <SquareCheckBig size={15} />
-                <span>1/3</span>
+                <span>
+                  {item.checklist.length}/
+                  {
+                    item.checklist.filter(
+                      (item) =>
+                        item.process.process !== 0 &&
+                        item.process.process === item.process.total,
+                    ).length
+                  }
+                </span>
               </div>
             )}
           </div>
         </div>
       }
     >
-      <CardDetail data={item}/>
+      <CardDetail data={item} />
     </Dialog>
   );
 };

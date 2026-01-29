@@ -6,7 +6,7 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { ListCard } from "./card";
+import { ListCard } from "../card/card";
 import { Button } from "../ui/button";
 import { DropdownMenu } from "../ui/dropdown";
 import type { MenuItem } from "@/types/menu-item/menu-item-type";

@@ -14,6 +14,7 @@ import { CardFacade } from "@/facades/card.facade";
 import ActionCard from "../popover-action/actions-card";
 import { LabelFacade } from "@/facades/label.facade";
 import moment from "moment";
+import Checklist from "./checklist/checklist";
 
 type CardDetailProps = {
   data: Card;
@@ -125,7 +126,7 @@ export const CardDetail = ({ data }: CardDetailProps) => {
       </div>
       {/* Content */}
       <div className="flex overflow-hidden rounded-bl-xl rounded-br-xl">
-        <div className="w-[60%] overflow-y-auto grid gap-5">
+        <div className="w-[60%] max-h-150 overflow-y-auto grid gap-5">
           <div className="px-5 pt-5 flex items-center gap-5">
             <CheckboxDemo
               onCheckedChange={(checked) =>
@@ -201,6 +202,12 @@ export const CardDetail = ({ data }: CardDetailProps) => {
                 </div>
               )}
             </div>
+          </div>
+          {/* Checklist */}
+          <div className="grid gap-5">
+            {data.checklist.map(item => (
+              <Checklist key={item._id} item={item} CardId={data._id}/>
+            ))}
           </div>
         </div>
         <div className="flex-1 bg-gray-100 border-l border-gray-200 overflow-y-auto"></div>

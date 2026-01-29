@@ -16,6 +16,7 @@ interface DropdownProps extends AriaAttributes {
   options: Option[];
   placeholder?: string;
   disabled?: boolean;
+  id?: string
 }
 
 export function Select({

@@ -1,11 +1,11 @@
 "use client";
 
-import { CreateBoard } from "@/components/boards/create-board";
+import { CreateBoard } from "@/components/board/create-board";
 import {
   BoardItem,
   BoardContainer,
   BoardWorkspace,
-} from "@/components/boards/board";
+} from "@/components/board/board";
 import { Button } from "@/components/ui/button";
 import { Popover } from "@/components/ui/popover";
 import { useAppSelector } from "@/hooks/useRedux";

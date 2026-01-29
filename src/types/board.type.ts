@@ -1,8 +1,9 @@
 import { EntityId } from "@reduxjs/toolkit";
 import { User } from "./user.type";
 import { CardDate } from "./card-date.type";
+import { CheckList } from "./card-checklist";
 
-interface MongoEntity {
+export interface MongoEntity {
   _id: EntityId;
 }
 
@@ -26,11 +27,6 @@ export interface Column extends MongoEntity {
   isTemp?: boolean;
 }
 
-type checklist = {
-  label: string;
-  checked: boolean;
-};
-
 export interface Tag extends MongoEntity {
   title: string | null;
   color: {
@@ -46,7 +42,7 @@ export interface Card extends MongoEntity {
   cover: string;
   description: string;
   attachments: string[];
-  checklist: checklist[];
+  checklist: CheckList[];
   date: CardDate
   tag: Tag[];
   joined: User[];

@@ -38,7 +38,7 @@ export const InputSearch = () => {
     };
 
     handleSearch();
-  }, [debounce]);
+  }, [debounce, keyword]);
   return (
     <div
       ref={ref}
@@ -123,7 +123,7 @@ const variantClass: Record<InputVariant, string> = {
 };
 
 const sizeClass: Record<InputSize, string> = {
-  sm: "",
+  sm: "p-1",
   md: "p-2",
   lg: "",
 };

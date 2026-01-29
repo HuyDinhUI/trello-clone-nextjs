@@ -6,7 +6,6 @@ import CardLabel from "./card-label";
 import CardChecklist from "./card-checklist";
 import CardDate from "./card-dates";
 import CardAttechment from "./card-attechment";
-import { EntityId } from "@reduxjs/toolkit";
 import { createContext, useContext, useState } from "react";
 import { Card } from "@/types/board.type";
 
