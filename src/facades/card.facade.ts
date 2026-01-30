@@ -2,13 +2,19 @@ import { store } from "@/store";
 import {
   addCardAsync,
   addChecklistAsync,
+  addChecklistItemAsync,
   changeCoverCardAsync,
   deleteCardAsync,
+  editLabelChecklistItemAsync,
+  editTitleChecklistAsync,
+  fetchCard,
   markedCardAsync,
   removeChecklistAsync,
+  removeChecklistItemAsync,
   toggleLabelAsync,
   updateDateAsync,
   updateOrderAndPositionAsync,
+  updateStatusChecklistItemAsync,
 } from "@/store/board/board.thunks";
 import { Column, Tag } from "@/types/board.type";
 import { CardDate } from "@/types/card-date.type";
@@ -16,6 +22,10 @@ import { EntityId } from "@reduxjs/toolkit";
 import { v4 as uuid } from "uuid";
 
 export const CardFacade = {
+  load(id: EntityId) {
+    store.dispatch(fetchCard(id));
+  },
+
   add(label: string, columnId: EntityId) {
     const tempId = uuid();
     store.dispatch(addCardAsync({ tempId, label, columnId }));
@@ -62,7 +72,75 @@ export const CardFacade = {
     );
   },
 
+  editTitleChecklist(CardId: EntityId, ChecklistId: EntityId, title: string) {
+    store.dispatch(
+      editTitleChecklistAsync({
+        CardId,
+        ChecklistId,
+        title,
+      }),
+    );
+  },
+
   removeChecklist(CardId: EntityId, ChecklistId: EntityId) {
     store.dispatch(removeChecklistAsync({ CardId, ChecklistId }));
+  },
+
+  addChecklistItem(CardId: EntityId, ChecklistId: EntityId, label: string) {
+    store.dispatch(
+      addChecklistItemAsync({
+        CardId,
+        ChecklistId,
+        ChecklistItem: {
+          _id: uuid(),
+          label,
+          dueDate: "",
+          status: false,
+          member: [],
+        },
+      }),
+    );
+  },
+
+  editLabelCheckListItem(
+    CardId: EntityId,
+    ChecklistId: EntityId,
+    ChecklistItemId: EntityId,
+    label: string,
+  ) {
+    store.dispatch(
+      editLabelChecklistItemAsync({
+        CardId,
+        ChecklistId,
+        ChecklistItemId,
+        label,
+      }),
+    );
+  },
+
+  updateStatusChecklistItem(
+    CardId: EntityId,
+    ChecklistId: EntityId,
+    ChecklistItemId: EntityId,
+    status: boolean,
+  ) {
+    store.dispatch(
+      updateStatusChecklistItemAsync({
+        CardId,
+        ChecklistId,
+        ChecklistItemId,
+        status,
+      }),
+    );
+  },
+
+  removeChecklistItem(
+    CardId: EntityId,
+    ChecklistId: EntityId,
+    ChecklistItemId: EntityId,
+  ) {
+    store.dispatch(
+      removeChecklistItemAsync({ CardId, ChecklistId, ChecklistItemId }),
+    );
   },
 };

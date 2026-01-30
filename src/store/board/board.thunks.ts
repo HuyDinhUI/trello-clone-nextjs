@@ -3,22 +3,27 @@ import { createAsyncThunk, EntityId } from "@reduxjs/toolkit";
 import {
   addCard,
   addChecklist,
+  addChecklistItem,
   addColumn,
   deleteCard,
   deleteColumn,
+  editLabelChecklistItem,
+  editTitleChecklist,
   removeChecklist,
+  removeChecklistItem,
   setColumn,
   toggleLabel,
   updateBoard,
   updateCard,
   updateColumn,
   updateDate,
+  updateStatusChecklistItem,
 } from "./board.slice";
 import { ColumnService } from "@/services/column-service";
 import { CardService } from "@/services/card-service";
 import { Column, Tag } from "@/types/board.type";
 import { CardDate } from "@/types/card-date.type";
-import { CheckList } from "@/types/card-checklist";
+import { CheckList, CheckListItem } from "@/types/card-checklist";
 
 //=======================================================//
 //================== BOARD THUNK =======================//
@@ -141,6 +146,14 @@ export const deleteColumnAsync = createAsyncThunk(
 //================== CARD THUNK ========================//
 //=====================================================//
 
+export const fetchCard = createAsyncThunk(
+  "board/fetchCard",
+  async (id: EntityId) => {
+    const res = await CardService.getCard(id)
+    return res.data
+  }
+)
+
 export const addCardAsync = createAsyncThunk(
   "board/addCard",
   async (
@@ -244,6 +257,22 @@ export const addChecklistAsync = createAsyncThunk(
   },
 );
 
+export const editTitleChecklistAsync = createAsyncThunk(
+  "board/editTitleChecklist",
+  async (
+    payload: { CardId: EntityId; ChecklistId: EntityId; title: string },
+    { dispatch },
+  ) => {
+    dispatch(
+      editTitleChecklist({
+        CardId: payload.CardId,
+        ChecklistId: payload.ChecklistId,
+        title: payload.title,
+      }),
+    );
+  },
+);
+
 export const removeChecklistAsync = createAsyncThunk(
   "board/removeChecklist",
   async (
@@ -254,6 +283,90 @@ export const removeChecklistAsync = createAsyncThunk(
       removeChecklist({
         CardId: payload.CardId,
         ChecklistId: payload.ChecklistId,
+      }),
+    );
+  },
+);
+
+export const addChecklistItemAsync = createAsyncThunk(
+  "board/addChecklistItem",
+  async (
+    payload: {
+      CardId: EntityId;
+      ChecklistId: EntityId;
+      ChecklistItem: CheckListItem;
+    },
+    { dispatch },
+  ) => {
+    dispatch(
+      addChecklistItem({
+        CardId: payload.CardId,
+        ChecklistId: payload.ChecklistId,
+        ChecklistItem: payload.ChecklistItem,
+      }),
+    );
+  },
+);
+
+export const updateStatusChecklistItemAsync = createAsyncThunk(
+  "board/updateStatusChecklistItem",
+  async (
+    payload: {
+      CardId: EntityId;
+      ChecklistId: EntityId;
+      ChecklistItemId: EntityId;
+      status: boolean;
+    },
+    { dispatch },
+  ) => {
+    dispatch(
+      updateStatusChecklistItem({
+        CardId: payload.CardId,
+        ChecklistId: payload.ChecklistId,
+        ChecklistItemId: payload.ChecklistItemId,
+        status: payload.status,
+      }),
+    );
+  },
+);
+
+export const editLabelChecklistItemAsync = createAsyncThunk(
+  "board/editLabelChecklistItem",
+  async (
+    payload: {
+      CardId: EntityId;
+      ChecklistId: EntityId;
+      ChecklistItemId: EntityId;
+      label: string;
+    },
+    { dispatch },
+  ) => {
+    dispatch(
+      editLabelChecklistItem({
+        CardId: payload.CardId,
+        ChecklistId: payload.ChecklistId,
+        ChecklistItemId: payload.ChecklistItemId,
+        label: payload.label,
+      }),
+    );
+  },
+);
+
+export const removeChecklistItemAsync = createAsyncThunk(
+  "board/removeChecklistItem",
+  async (
+    payload: {
+      CardId: EntityId;
+      ChecklistId: EntityId;
+      ChecklistItemId: EntityId;
+    },
+    { dispatch },
+  ) => {
+    dispatch(
+      removeChecklistItem({
+        CardId: payload.CardId,
+        ChecklistId: payload.ChecklistId,
+        ChecklistItemId: payload.ChecklistItemId,
       }),
     );
   },

@@ -6,11 +6,12 @@ import {
   addColumnAsync,
   fetchAllBoard,
   fetchBoard,
+  fetchCard,
 } from "./board.thunks";
 import { isEmpty } from "lodash";
 import { generatePlaceholdeCard } from "@/utils/formatters";
 import { CardDate } from "@/types/card-date.type";
-import { CheckList } from "@/types/card-checklist";
+import { CheckList, CheckListItem } from "@/types/card-checklist";
 
 const initialState = {
   boards: boardsAdapter.getInitialState(),
@@ -250,6 +251,25 @@ const boardSlice = createSlice({
       });
     },
 
+    editTitleChecklist: (
+      state,
+      action: PayloadAction<{
+        CardId: EntityId;
+        ChecklistId: EntityId;
+        title: string;
+      }>,
+    ) => {
+      const list = state.cards.entities[action.payload.CardId].checklist;
+      const checklist = list.find((i) => i._id === action.payload.ChecklistId);
+      checklist!.title = action.payload.title;
+      cardAdapter.updateOne(state.cards, {
+        id: action.payload.CardId,
+        changes: {
+          checklist: list,
+        },
+      });
+    },
+
     removeChecklist: (
       state,
       action: PayloadAction<{ CardId: EntityId; ChecklistId: EntityId }>,
@@ -257,10 +277,104 @@ const boardSlice = createSlice({
       const checklist = state.cards.entities[action.payload.CardId].checklist;
       cardAdapter.updateOne(state.cards, {
         id: action.payload.CardId,
-        changes: { checklist: checklist.filter((item) => !item._id) },
+        changes: {
+          checklist: checklist.filter(
+            (item) => item._id !== action.payload.ChecklistId,
+          ),
+        },
+      });
+    },
+
+    addChecklistItem: (
+      state,
+      action: PayloadAction<{
+        CardId: EntityId;
+        ChecklistId: EntityId;
+        ChecklistItem: CheckListItem;
+      }>,
+    ) => {
+      const list = state.cards.entities[action.payload.CardId].checklist;
+      const checklist = list.find((i) => i._id === action.payload.ChecklistId);
+      checklist!.items = [...checklist!.items, action.payload.ChecklistItem];
+      checklist!.process.total += 1;
+
+      cardAdapter.updateOne(state.cards, {
+        id: action.payload.CardId,
+        changes: { checklist: list },
+      });
+    },
+
+    updateStatusChecklistItem: (
+      state,
+      action: PayloadAction<{
+        CardId: EntityId;
+        ChecklistId: EntityId;
+        ChecklistItemId: EntityId;
+        status: boolean;
+      }>,
+    ) => {
+      const list = state.cards.entities[action.payload.CardId].checklist;
+      const checklist = list.find((i) => i._id === action.payload.ChecklistId);
+      const items = checklist?.items.find(
+        (i) => i._id === action.payload.ChecklistItemId,
+      );
+      items!.status = action.payload.status;
+      if (action.payload.status) {
+        checklist!.process.process += 1;
+      } else {
+        checklist!.process.process -= 1;
+      }
+      cardAdapter.updateOne(state.cards, {
+        id: action.payload.CardId,
+        changes: { checklist: list },
+      });
+    },
+
+    editLabelChecklistItem: (
+      state,
+      action: PayloadAction<{
+        CardId: EntityId;
+        ChecklistId: EntityId;
+        ChecklistItemId: EntityId;
+        label: string;
+      }>,
+    ) => {
+      const list = state.cards.entities[action.payload.CardId].checklist;
+      const checklist = list.find((i) => i._id === action.payload.ChecklistId);
+      const item = checklist?.items.find(
+        (i) => i._id === action.payload.ChecklistItemId,
+      );
+      item!.label = action.payload.label;
+
+      cardAdapter.updateOne(state.cards, {
+        id: action.payload.CardId,
+        changes: { checklist: list },
+      });
+    },
+
+    removeChecklistItem: (
+      state,
+      action: PayloadAction<{
+        CardId: EntityId;
+        ChecklistId: EntityId;
+        ChecklistItemId: EntityId;
+      }>,
+    ) => {
+      const list = state.cards.entities[action.payload.CardId].checklist;
+      const checklist = list.find((i) => i._id === action.payload.ChecklistId);
+      checklist!.items = checklist!.items.filter(
+        (i) => i._id !== action.payload.ChecklistItemId,
+      );
+
+      checklist!.process.total -= 1;
+
+      cardAdapter.updateOne(state.cards, {
+        id: action.payload.CardId,
+        changes: { checklist: list },
       });
     },
   },
+
   extraReducers: (builder) => {
     builder
 
@@ -338,6 +452,18 @@ const boardSlice = createSlice({
       //================== CARD CASE =======================//
       //====================================================//
 
+      // .addCase(fetchCard.pending, (state) => {
+      //   state.loading = true;
+      // })
+      .addCase(fetchCard.fulfilled, (state, action) => {
+        state.loading = false;
+        cardAdapter.upsertOne = action.payload;
+      })
+      .addCase(fetchCard.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message!;
+      })
+
       .addCase(addCardAsync.fulfilled, (state, action) => {
         cardAdapter.updateOne(state.cards, {
           id: action.payload.tempId,
@@ -374,7 +500,12 @@ export const {
   toggleLabel,
   updateDate,
   addChecklist,
-  removeChecklist
+  editTitleChecklist,
+  removeChecklist,
+  addChecklistItem,
+  updateStatusChecklistItem,
+  editLabelChecklistItem,
+  removeChecklistItem,
 } = boardSlice.actions;
 
 export default boardSlice.reducer;

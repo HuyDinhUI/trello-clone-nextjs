@@ -20,12 +20,14 @@ export function InlineEditorRoot({
   value,
   onSave,
   children,
+  withStart = false,
 }: {
   value: string;
   onSave: (value: string) => void;
   children: React.ReactNode;
+  withStart?: boolean;
 }) {
-  const [isEditing, setEditing] = useState(false);
+  const [isEditing, setEditing] = useState(withStart);
   const [draft, setDraft] = useState(value);
 
   const startEdit = () => {
@@ -36,6 +38,7 @@ export function InlineEditorRoot({
   const cancelEdit = () => setEditing(false);
 
   const saveEdit = () => {
+    if (!draft) return
     onSave(draft);
     setEditing(false);
   };
@@ -85,6 +88,7 @@ InlineEditorRoot.Input = function InputField(
       value={draft}
       onChange={(e) => setDraft(e.target.value)}
       className="w-full p-2 ring ring-gray-200 rounded-sm"
+      rows={1}
     ></textarea>
   );
 };

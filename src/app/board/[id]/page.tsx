@@ -4,6 +4,7 @@ const BoardPage = async () => {
 
     return (
         <Board/>
+        
     )
 }
 

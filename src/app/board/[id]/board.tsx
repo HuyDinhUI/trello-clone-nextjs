@@ -52,6 +52,7 @@ import { findColumnByCardId, getNewCardIndex } from "@/utils/helper";
 import { moveCard } from "@/store/board/board.slice";
 import { CardFacade } from "@/facades/card.facade";
 import { UserFacade } from "@/facades/user.facade";
+import { CardDetail } from "@/components/card/card-detail";
 
 const TYPE_ACTIVE_DND = {
   COLUMN: "T_COLUMN",
@@ -66,6 +67,7 @@ const Board = () => {
   const columns = useAppSelector((state: RootState) =>
     columnsSelectors.selectAll(state),
   );
+  const {isCardDetailView} = useAppSelector((state: RootState) => state.ui)
   const { loading, currenBoardId } = useAppSelector(
     (state: RootState) => state.board,
   );
@@ -210,6 +212,7 @@ const Board = () => {
           </div>
         </div>
       </DndContext>
+      {isCardDetailView.open && <CardDetail/>}
     </div>
   );
 };
