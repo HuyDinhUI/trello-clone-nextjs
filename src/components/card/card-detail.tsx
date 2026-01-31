@@ -7,8 +7,6 @@ import { Button } from "../ui/button";
 import { Ellipsis, Image as Img, TextAlignStart, X } from "lucide-react";
 import { COVER_COLOR, COVER_PHOTOS } from "@/mock/cover-data";
 import Image from "next/image";
-import "quill/dist/quill.snow.css";
-import Editor from "../ui/editor";
 import { CardFacade } from "@/facades/card.facade";
 import ActionCard from "../popover-action/actions-card";
 import { LabelFacade } from "@/facades/label.facade";
@@ -19,10 +17,17 @@ import { useAppSelector } from "@/hooks/useRedux";
 import { RootState } from "@/store";
 import { cardsSelectors } from "@/store/board/board.selectors";
 import { UIFacade } from "@/facades/ui.facade";
+import Editor from "../ui/editor";
+import clsx from "clsx";
+
+const DATA_DESCRIPTION_INIT = {
+  blocks: [],
+};
 
 export const CardDetail = () => {
   const [isOpenForm, setIsOpenForm] = useState<boolean>(false);
   const { isCardDetailView } = useAppSelector((state: RootState) => state.ui);
+  const [description, setDescription] = useState<any>(DATA_DESCRIPTION_INIT);
 
   const data = useAppSelector((state: RootState) =>
     cardsSelectors.selectById(state, isCardDetailView.cardId),
@@ -196,32 +201,23 @@ export const CardDetail = () => {
                   <span className="font-bold">Description</span>
                 </div>
                 <div
-                  className={`flex gap-5 pb-10 ${isOpenForm ? "min-h-80" : ""}`}
+                  className={`flex gap-5 pb-10 ${isOpenForm ? "min-h-20" : ""}`}
                 >
                   <div className="w-5"></div>
-                  {!data?.description && !isOpenForm && (
-                    <div className="flex-1">
-                      <div
-                        onClick={() => setIsOpenForm(true)}
-                        className="ring ring-gray-200 px-2 pt-2 pb-10 w-full rounded-sm hover:bg-gray-200 cursor-pointer"
-                      >
-                        <p>Add a more detailed description...</p>
-                      </div>
+                  <div className="w-full">
+                    <div
+                      onClick={() => setIsOpenForm(true)}
+                      className={clsx("prose")}
+                    >
+                      <Editor
+                        data={data.description}
+                        onChange={(v) =>
+                          CardFacade.updateDescription(data._id, v)
+                        }
+                        editorBlock="editor-container"
+                      />
                     </div>
-                  )}
-                  {/* form create description */}
-                  {isOpenForm && (
-                    <div className="w-full max-h-50">
-                      <Editor show={isOpenForm} />
-                      <div className="flex gap-2 pt-2">
-                        <Button variant="primary" title="Save" />
-                        <Button
-                          onClick={() => setIsOpenForm(false)}
-                          title="Cancel"
-                        />
-                      </div>
-                    </div>
-                  )}
+                  </div>
                 </div>
               </div>
               {/* Checklist */}

@@ -17,6 +17,7 @@ import {
   updateCard,
   updateColumn,
   updateDate,
+  updateDescription,
   updateStatusChecklistItem,
 } from "./board.slice";
 import { ColumnService } from "@/services/column-service";
@@ -24,6 +25,7 @@ import { CardService } from "@/services/card-service";
 import { Column, Tag } from "@/types/board.type";
 import { CardDate } from "@/types/card-date.type";
 import { CheckList, CheckListItem } from "@/types/card-checklist";
+import { EditorData } from "@/types/description.type";
 
 //=======================================================//
 //================== BOARD THUNK =======================//
@@ -149,10 +151,10 @@ export const deleteColumnAsync = createAsyncThunk(
 export const fetchCard = createAsyncThunk(
   "board/fetchCard",
   async (id: EntityId) => {
-    const res = await CardService.getCard(id)
-    return res.data
-  }
-)
+    const res = await CardService.getCard(id);
+    return res.data;
+  },
+);
 
 export const addCardAsync = createAsyncThunk(
   "board/addCard",
@@ -367,6 +369,21 @@ export const removeChecklistItemAsync = createAsyncThunk(
         CardId: payload.CardId,
         ChecklistId: payload.ChecklistId,
         ChecklistItemId: payload.ChecklistItemId,
+      }),
+    );
+  },
+);
+
+export const updateDescriptionAsync = createAsyncThunk(
+  "board/updateDescription",
+  async (
+    payload: { CardId: EntityId; description: EditorData },
+    { dispatch },
+  ) => {
+    dispatch(
+      updateDescription({
+        CardId: payload.CardId,
+        description: payload.description,
       }),
     );
   },

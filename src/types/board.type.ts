@@ -2,6 +2,7 @@ import { EntityId } from "@reduxjs/toolkit";
 import { User } from "./user.type";
 import { CardDate } from "./card-date.type";
 import { CheckList } from "./card-checklist";
+import { EditorData } from "./description.type";
 
 export interface MongoEntity {
   _id: EntityId;
@@ -40,7 +41,7 @@ export interface Card extends MongoEntity {
   status: boolean;
   columnId: EntityId;
   cover: string;
-  description: string;
+  description: EditorData;
   attachments: string[];
   checklist: CheckList[];
   date: CardDate

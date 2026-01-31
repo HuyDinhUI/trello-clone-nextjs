@@ -1,38 +1,56 @@
 "use client";
+import { memo, useEffect, useRef } from "react";
+import EditorJS from "@editorjs/editorjs";
+import Header from "@editorjs/header";
+import EditorjsList from "@editorjs/list";
 
-import Quill from "quill";
-import { useEffect } from "react";
-
-type props = {
-  show: boolean;
+type EditorProps = {
+  data: any;
+  onChange: (v: any) => void;
+  editorBlock: string;
+  readonly?: boolean;
 };
 
-export default function Editor({ show }: props) {
+const Editor = ({
+  data,
+  onChange,
+  editorBlock,
+  readonly = false,
+}: EditorProps) => {
+  const ref = useRef<any>(null);
   useEffect(() => {
-    if (!show) return;
+    if (!ref.current) {
+      const editor = new EditorJS({
+        holder: editorBlock,
+        data: data,
+        async onChange(api) {
+          const saved = await api.saver.save();
+          onChange(saved);
+        },
+        placeholder: "Let`s write a description! (tip: Press '/' for commands)",
+        tools: {
+          header: Header,
+          List: {
+            class: EditorjsList,
+            inlineToolbar: true,
+            config: {
+              defaultStyle: "unordered",
+            },
+          },
+        },
+        readOnly: readonly,
+      });
+      ref.current = editor;
+    }
 
-    const container = document.getElementById("editor");
-    const quill = new Quill(container!, {
-      theme: "snow",
-      modules: {
-        toolbar: [
-          ["bold", "italic", "underline", "strike"],
+    // return () => {
+    //   if (ref.current && ref.current.destroy) {
+    //     ref.current.destroy();
+    //   }
+    // };
+  }, [editorBlock, data, onChange, readonly]);
 
-          [{ list: "ordered" }, { list: "bullet" }],
-          [{ indent: "-1" }, { indent: "+1" }],
-          [{ header: [1, 2, 3, 4, 5, 6, false] }],
-          ["link", "image", "video"],
-        ],
-      },
-    });
+  return <div id={editorBlock}></div>;
+};
 
-    return () => {
-      // 🔥 cleanup để khi mount lại có thể init lại
-      container!.innerHTML = "";
-    };
-  }, [show]);
-
-  if (!show) return null;
-
-  return <div id="editor" />;
-}
+export default memo(Editor);

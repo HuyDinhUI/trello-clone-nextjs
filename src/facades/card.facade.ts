@@ -13,11 +13,13 @@ import {
   removeChecklistItemAsync,
   toggleLabelAsync,
   updateDateAsync,
+  updateDescriptionAsync,
   updateOrderAndPositionAsync,
   updateStatusChecklistItemAsync,
 } from "@/store/board/board.thunks";
 import { Column, Tag } from "@/types/board.type";
 import { CardDate } from "@/types/card-date.type";
+import { EditorData } from "@/types/description.type";
 import { EntityId } from "@reduxjs/toolkit";
 import { v4 as uuid } from "uuid";
 
@@ -142,5 +144,9 @@ export const CardFacade = {
     store.dispatch(
       removeChecklistItemAsync({ CardId, ChecklistId, ChecklistItemId }),
     );
+  },
+
+  updateDescription(CardId: EntityId, description: EditorData) {
+    store.dispatch(updateDescriptionAsync({ CardId, description }));
   },
 };

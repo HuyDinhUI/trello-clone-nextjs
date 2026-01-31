@@ -16,8 +16,6 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import CheckboxDemo from "../ui/checkbox";
 import { Button } from "../ui/button";
-import { Dialog } from "../ui/dialog";
-import { CardDetail } from "./card-detail";
 import { Card as CardType } from "@/types/board.type";
 import { EntityId } from "@reduxjs/toolkit";
 import { CardFacade } from "@/facades/card.facade";
@@ -51,14 +49,6 @@ export const Card = ({ CardId }: CardProps) => {
     opacity: isDragging ? 0.5 : undefined,
   };
 
-  const handleDeleteCard = () => {
-    CardFacade.delete(item._id, item.columnId);
-  };
-
-  const markCard = async (columnId: EntityId, cardId: EntityId, value: any) => {
-    CardFacade.marked(cardId, value, columnId);
-  };
-
   return (
     <div
       ref={setNodeRef}
@@ -70,11 +60,11 @@ export const Card = ({ CardId }: CardProps) => {
           ? "opacity-0 h-1 p-0 mt-0 shadow-none border-none"
           : "opacity-100 mt-2"
       }`}
-      onClick={() => UIFacade.setCardDetailView(true, CardId as string)}
     >
       {/* cover */}
       {item.cover && (
         <div
+          onClick={() => UIFacade.setCardDetailView(true, CardId as string)}
           className="min-h-35 bg-cover"
           style={{ backgroundImage: `url("${item.cover}")` }}
         ></div>
@@ -100,11 +90,16 @@ export const Card = ({ CardId }: CardProps) => {
               item.status ? "" : "hidden group-hover:block"
             }`}
             onCheckedChange={(checked) => {
-              markCard(item.columnId, item._id, checked === true);
+              CardFacade.marked(CardId, checked === true, item.columnId);
             }}
             checked={item.status}
           />
-          <span>{item.label}</span>
+          <div
+            className="flex-1"
+            onClick={() => UIFacade.setCardDetailView(true, CardId as string)}
+          >
+            {item.label}
+          </div>
         </div>
         <div className="flex gap-2 items-center opacity-0 group-hover:opacity-100 transition-opacity duration-100 absolute top-1 right-1">
           <Button
@@ -112,7 +107,9 @@ export const Card = ({ CardId }: CardProps) => {
             variant="transparent"
             size="ic"
             icon={<Trash size={13} />}
-            onClick={() => handleDeleteCard()}
+            onClick={() => {
+              CardFacade.delete(item._id, item.columnId);
+            }}
           />
           <Button
             className="bg-white rounded-full"
@@ -131,7 +128,7 @@ export const Card = ({ CardId }: CardProps) => {
             {moment(item.date.dueDate).format("MMM D")}
           </div>
         )}
-        {item.description && (
+        {item.description.time && (
           <div className="pb-2">
             <Text size={15} />
           </div>
