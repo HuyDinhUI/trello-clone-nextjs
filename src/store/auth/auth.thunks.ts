@@ -21,7 +21,7 @@ export const register = createAsyncThunk(
   "auth/register",
   async (data: RegisterBody) => {
     await AuthSevices.register(data);
-    window.location.href = "/auth/login";
+    window.location.href = "/login";
     toast.success("Register is success", {
       theme: "light",
     });
@@ -31,7 +31,7 @@ export const register = createAsyncThunk(
 export const logout = createAsyncThunk("auth/logout", async () => {
   await AuthSevices.logout();
   await persistor.purge();
-  window.location.href = "/auth/login";
+  window.location.href = "/login";
 });
 
 export const oauth = createAsyncThunk(

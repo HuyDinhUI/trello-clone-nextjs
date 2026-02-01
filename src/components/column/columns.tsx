@@ -1,5 +1,5 @@
 import { Ellipsis, Plus, X } from "lucide-react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import {
   SortableContext,
   horizontalListSortingStrategy,
@@ -16,6 +16,7 @@ import { RootState } from "@/store";
 import { EntityId } from "@reduxjs/toolkit";
 import { ColumnFacade } from "@/facades/column.facade";
 import { CardFacade } from "@/facades/card.facade";
+import InlineEditor from "../ui/inline-editor/inline-editor";
 
 type ColummsProps = {
   label: string;
@@ -24,16 +25,9 @@ type ColummsProps = {
   card: Card[];
 };
 
-export const Column = ({
-  label,
-  children,
-  id,
-  card,
-}: ColummsProps) => {
+export const Column = ({ label, children, id, card }: ColummsProps) => {
   const [openCreate, setOpenCreate] = useState(false);
-  const [openEditLabel, setOpenEditLabel] = useState(false);
   const [labelInputCard, setLabelInputCard] = useState<string>("");
-  const input = useRef<HTMLTextAreaElement>(null);
 
   const {
     attributes,
@@ -51,27 +45,13 @@ export const Column = ({
     opacity: isDragging ? 0.5 : undefined,
   };
 
-  useEffect(() => {
-    const handleClickOutside = async (event: MouseEvent) => {
-      if (input.current && !input.current.contains(event.target as Node)) {
-        ColumnFacade.update(id, input.current.value);
-        setOpenEditLabel(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [id]);
-
   const handleCreateCard = async () => {
-    CardFacade.add(labelInputCard, id)
+    CardFacade.add(labelInputCard, id);
     setLabelInputCard("");
   };
 
   const handleDeleteColumn = async () => {
-    ColumnFacade.delete(id)
+    ColumnFacade.delete(id);
   };
 
   const ActionsBoardItems: MenuItem[] = [
@@ -114,27 +94,17 @@ export const Column = ({
     >
       <div
         {...listeners}
-        className="bg-gray-100 dark:bg-column rounded-xl cursor-pointer min-h-30 max-h-[80vh] relative"
+        className="bg-white dark:bg-slate-900 rounded-xl cursor-pointer min-h-30 max-h-[80vh] relative"
       >
         <header className="flex justify-between gap-2 items-center p-2">
-          {!openEditLabel ? (
-            <Button
-              onClick={() => setOpenEditLabel(true)}
-              variant="transparent"
-              size="lb"
-              className="font-bold w-full p-2"
-              title={label}
-            />
-          ) : (
-            <textarea
-              defaultValue={label}
-              ref={input}
-              autoFocus
-              onBlur={() => setOpenEditLabel(false)}
-              className="w-full resize-none p-2 bg-white dark:bg-background outline-blue-500"
-              rows={1}
-            ></textarea>
-          )}
+          <InlineEditor
+            actionButton={false}
+            title={label}
+            handle={(v) => ColumnFacade.update(id, v)}
+            classname="w-full px-2"
+          >
+            <div className="font-bold">{label}</div>
+          </InlineEditor>
 
           <DropdownMenu
             side="bottom"
@@ -153,8 +123,9 @@ export const Column = ({
               <textarea
                 onChange={(e) => setLabelInputCard(e.target.value)}
                 autoFocus
-                className="w-full resize-none p-2 rounded-md bg-white dark:bg-background shadow-md outline-blue-500"
+                className="w-full resize-none p-2 rounded-md bg-white dark:bg-slate-800 shadow-md outline-blue-500"
                 placeholder="Enter a title or past a link"
+                value={labelInputCard}
               />
               <div className="w-full flex gap-2 mt-2 justify-start">
                 <Button
@@ -173,17 +144,15 @@ export const Column = ({
         </div>
 
         {!openCreate && (
-          <div className="py-2 px-3 bg-gray-100 absolute bottom-0 right-0 left-0 rounded-bl-xl rounded-br-xl">
+          <div className="py-2 px-3 absolute bottom-0 right-0 left-0 rounded-bl-xl rounded-br-xl">
             <Button
               onClick={() => setOpenCreate(true)}
               variant="transparent"
               title="Add a card"
-              icon={<Plus />}
+              size="sm"
+              icon={<Plus size={20} />}
               className="w-full hover:bg-black/5 rounded-md"
-            >
-              <Plus size={18} />
-              <label>Add a card</label>
-            </Button>
+            />
           </div>
         )}
       </div>
@@ -196,15 +165,7 @@ type ListColumnsProps = {
 };
 
 export const ListColumns = ({ columns }: ListColumnsProps) => {
-  const [openCreate, setOpenCreate] = useState(false);
-  const [title, setTitle] = useState<string>("");
   const { currenBoardId } = useAppSelector((state: RootState) => state.board);
-
-  const handleAddColumn = async () => {
-    ColumnFacade.add(title, currenBoardId!);
-    setTitle("");
-    setOpenCreate(false);
-  };
 
   return (
     <SortableContext
@@ -213,46 +174,18 @@ export const ListColumns = ({ columns }: ListColumnsProps) => {
     >
       <div className="flex p-5 gap-3 max-h-[80vh] overflow-x-scroll absolute">
         {columns.map((col) => (
-          <Column
-            key={col._id}
-            id={col._id}
-            label={col.title}
-            card={col.cards}
-          >
+          <Column key={col._id} id={col._id} label={col.title} card={col.cards}>
             <ListCard items={col.cards} />
           </Column>
         ))}
         <div className="w-70">
-          {!openCreate ? (
-            <button
-              onClick={() => setOpenCreate(true)}
-              className="flex w-full items-center text-white p-3 gap-2 opacity-70 bg-white/30 hover:bg-black/10 dark:hover:bg-white/10 rounded-xl cursor-pointer"
-            >
-              <Plus size={18} />
-              <label>Add another list</label>
-            </button>
-          ) : (
-            <div className="bg-background p-3 rounded-xl h-[131px]">
-              <textarea
-                onChange={(e) => setTitle(e.target.value)}
-                rows={1}
-                className="w-full resize-none p-2 rounded-md bg-white dark:bg-background border border-blue-500"
-                placeholder="Enter a title or past a link"
-              />
-              <div className="w-full flex gap-2 mt-2 justify-start">
-                <Button
-                  onClick={() => handleAddColumn()}
-                  variant="primary"
-                  title="Add list"
-                />
-                <Button
-                  onClick={() => setOpenCreate(false)}
-                  variant="transparent"
-                  icon={<X />}
-                ></Button>
-              </div>
-            </div>
-          )}
+          <InlineEditor
+            title=""
+            handle={(v) => ColumnFacade.add(v, currenBoardId!)}
+            classname="w-full"
+          >
+            <Button className="w-full bg-white/20 dark:bg-black/20 text-white rounded-xl" variant="transparent" title="Add another list" />
+          </InlineEditor>
         </div>
       </div>
     </SortableContext>

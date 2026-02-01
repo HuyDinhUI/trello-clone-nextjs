@@ -4,7 +4,13 @@ import CheckboxDemo from "../ui/checkbox";
 import { useEffect, useState } from "react";
 import { Popover } from "../ui/popover";
 import { Button } from "../ui/button";
-import { Ellipsis, Image as Img, TextAlignStart, X } from "lucide-react";
+import {
+  Ellipsis,
+  Image as Img,
+  MessageSquareText,
+  TextAlignStart,
+  X,
+} from "lucide-react";
 import { COVER_COLOR, COVER_PHOTOS } from "@/mock/cover-data";
 import Image from "next/image";
 import { CardFacade } from "@/facades/card.facade";
@@ -19,16 +25,11 @@ import { cardsSelectors } from "@/store/board/board.selectors";
 import { UIFacade } from "@/facades/ui.facade";
 import Editor from "../ui/editor";
 import clsx from "clsx";
-
-const DATA_DESCRIPTION_INIT = {
-  blocks: [],
-};
+import BuildingAnimation from "../ui/animation/building";
 
 export const CardDetail = () => {
   const [isOpenForm, setIsOpenForm] = useState<boolean>(false);
   const { isCardDetailView } = useAppSelector((state: RootState) => state.ui);
-  const [description, setDescription] = useState<any>(DATA_DESCRIPTION_INIT);
-
   const data = useAppSelector((state: RootState) =>
     cardsSelectors.selectById(state, isCardDetailView.cardId),
   );
@@ -49,8 +50,10 @@ export const CardDetail = () => {
         onClick={() => UIFacade.setCardDetailView(false, "")}
         className="fixed top-0 left-0 w-screen h-screen bg-black/40"
       ></div>
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 dark:bg-card mt-10 ">
-        <div className={`flex flex-col max-h-dvh bg-white rounded-xl w-270`}>
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 mt-10">
+        <div
+          className={`flex flex-col max-h-dvh bg-white dark:bg-slate-900 rounded-xl w-270`}
+        >
           {/* cover */}
           <div
             className={`bg-cover w-full border-b border-gray-200 relative group rounded-tl-xl rounded-tr-xl ${
@@ -58,13 +61,13 @@ export const CardDetail = () => {
             }`}
             style={{ backgroundImage: `url(${data?.cover})` }}
           >
-            <div className="absolute px-15 right-0 top-3.5 flex gap-2 items-center">
+            <div className="absolute right-5 top-3.5 flex gap-2 items-center">
               <Popover
                 side="bottom"
                 align="start"
                 trigger={
                   <Button
-                    className="bg-white rounded-full"
+                    className="rounded-full"
                     variant="transparent"
                     size="ic"
                     icon={<Img size={15} />}
@@ -126,7 +129,7 @@ export const CardDetail = () => {
               <Popover
                 trigger={
                   <Button
-                    className="bg-white rounded-full"
+                    className="rounded-full"
                     variant="transparent"
                     size="ic"
                     icon={<Ellipsis size={15} />}
@@ -135,13 +138,22 @@ export const CardDetail = () => {
               >
                 <div className="w-70 min-h-50 bg-white"></div>
               </Popover>
+              <Button
+                onClick={() => UIFacade.setCardDetailView(false, "")}
+                className="bg-white rounded-full cursor-pointer"
+                icon={<X size={15} color="black" />}
+                variant="transparent"
+                size="ic"
+              >
+                
+              </Button>
             </div>
             {data?.cover && (
               <span
                 onClick={() =>
                   CardFacade.changeCoverCard(data._id, "", data.columnId)
                 }
-                className="absolute hidden group-hover:block bottom-2 right-3 text-sm bg-white rounded-md p-1 cursor-pointer"
+                className="absolute hidden group-hover:block bottom-2 right-3 text-sm bg-white dark:bg-slate-900 rounded-md p-2 cursor-pointer"
               >
                 Remove cover
               </span>
@@ -227,15 +239,20 @@ export const CardDetail = () => {
                 ))}
               </div>
             </div>
-            <div className="flex-1 bg-gray-100 border-l border-gray-200 overflow-y-auto"></div>
+            {/* Comment & Activity */}
+            <div className="flex-1 bg-gray-50 border-l border-gray-200 dark:bg-slate-900 overflow-y-auto p-5">
+              <div>
+                <div className="flex items-center gap-2">
+                  <MessageSquareText size={20} />
+                  <strong>Comments and Activity</strong>
+                </div>
+                <div className="mt-20">
+                  <BuildingAnimation />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <button
-          onClick={() => UIFacade.setCardDetailView(false, "")}
-          className="bg-white rounded-full absolute top-4 right-3 p-1 cursor-pointer"
-        >
-          <X size={20} color="black" />
-        </button>
       </div>
     </Portal>
   );

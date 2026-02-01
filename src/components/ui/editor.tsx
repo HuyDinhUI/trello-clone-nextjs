@@ -39,6 +39,7 @@ const Editor = ({
           },
         },
         readOnly: readonly,
+        autofocus: true
       });
       ref.current = editor;
     }
@@ -50,7 +51,7 @@ const Editor = ({
     // };
   }, [editorBlock, data, onChange, readonly]);
 
-  return <div id={editorBlock}></div>;
+  return <div className="dark:text-white" id={editorBlock}></div>;
 };
 
 export default memo(Editor);

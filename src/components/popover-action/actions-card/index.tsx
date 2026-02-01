@@ -1,11 +1,10 @@
-import { Clock, Paperclip, Plus, SquareCheckBig, Tag } from "lucide-react";
+import { Clock, Plus, SquareCheckBig, Tag } from "lucide-react";
 import ActionRoot from "../action-root";
 import { StackPopoverItem } from "@/components/ui/popover-stack/popover-item";
 import AddToCard from "./add-to-card";
 import CardLabel from "./card-label";
 import CardChecklist from "./card-checklist";
 import CardDate from "./card-dates";
-import CardAttechment from "./card-attechment";
 import { createContext, useContext, useState } from "react";
 import { Card } from "@/types/board.type";
 
@@ -28,12 +27,12 @@ export const LIST_ACTIONS = [
     icon: <SquareCheckBig size={15} />,
     children: <CardChecklist />,
   },
-  {
-    title: "Attachment",
-    description: "Add links, pages, work items, and more",
-    icon: <Paperclip size={15} />,
-    children: <CardAttechment />,
-  },
+  // {
+  //   title: "Attachment",
+  //   description: "Add links, pages, work items, and more",
+  //   icon: <Paperclip size={15} />,
+  //   children: <CardAttechment />,
+  // },
 ];
 
 type ActionCardContextType = {

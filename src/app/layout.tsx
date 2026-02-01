@@ -12,8 +12,8 @@ const manrope = Manrope({
 })
 
 export const metadata: Metadata = {
-  title: "Trello",
-  description: "Jobs Management",
+  title: "Kanflow - Personal Kanban Task Manager",
+  description: "Kanflow is a personal Kanban task management app built for productivity and smooth workflow.",
 };
 
 export default function RootLayout({
@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="mdl-js">
       <body
-        className={`${manrope.variable} antialiased`}
+        className={`${manrope.variable} antialiased transition-colors`}
       >
         <ReduxProvider>
           <UserBootstrap/>

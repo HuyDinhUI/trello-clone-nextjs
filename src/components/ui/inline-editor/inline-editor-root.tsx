@@ -87,7 +87,7 @@ InlineEditorRoot.Input = function InputField(
       {...props}
       value={draft}
       onChange={(e) => setDraft(e.target.value)}
-      className="w-full p-2 ring ring-gray-200 rounded-sm"
+      className="w-full px-2 py-1.5 bg-white dark:bg-slate-800 ring ring-gray-200 rounded-sm"
       rows={1}
     ></textarea>
   );
@@ -108,7 +108,7 @@ InlineEditorRoot.Edit = function Edit({
   if (!ctx.isEditing) return null;
 
   return (
-    <div ref={ref} className="space-y-2 w-full">
+    <div ref={ref} className="w-full rounded-xl">
       {children}
     </div>
   );
@@ -125,7 +125,7 @@ InlineEditorRoot.Actions = function Actions() {
         title="Save"
         onClick={saveEdit}
       ></Button>
-      <Button size="sm" onClick={cancelEdit} title="Cancel"></Button>
+      <Button variant="transparent" size="sm" onClick={cancelEdit} title="Cancel"></Button>
     </div>
   );
 };

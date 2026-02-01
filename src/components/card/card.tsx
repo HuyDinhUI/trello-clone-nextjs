@@ -55,7 +55,7 @@ export const Card = ({ CardId }: CardProps) => {
       style={style}
       {...attributes}
       {...listeners}
-      className={`bg-white dark:bg-card rounded-xl group shadow-sm cursor-pointer border-2 border-transparent hover:border-blue-800 overflow-hidden relative ${
+      className={`dark:bg-slate-800 shadow rounded-md group cursor-pointer border-2 border-transparent hover:border-blue-800 overflow-hidden relative ${
         item.FE_placeholderCard
           ? "opacity-0 h-1 p-0 mt-0 shadow-none border-none"
           : "opacity-100 mt-2"
@@ -103,7 +103,7 @@ export const Card = ({ CardId }: CardProps) => {
         </div>
         <div className="flex gap-2 items-center opacity-0 group-hover:opacity-100 transition-opacity duration-100 absolute top-1 right-1">
           <Button
-            className="bg-white rounded-full"
+            className="rounded-full"
             variant="transparent"
             size="ic"
             icon={<Trash size={13} />}
@@ -112,7 +112,8 @@ export const Card = ({ CardId }: CardProps) => {
             }}
           />
           <Button
-            className="bg-white rounded-full"
+            onClick={() => UIFacade.setCardDetailView(true, CardId as string)}
+            className="rounded-full"
             variant="transparent"
             size="ic"
             icon={<Edit size={13} />}

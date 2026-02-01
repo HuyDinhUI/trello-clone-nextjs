@@ -13,26 +13,15 @@ import {
   ListFilter,
   Minus,
 } from "lucide-react";
-import {
-  DndContext,
-  useSensor,
-  useSensors,
-  PointerSensor,
-  DragOverlay,
-  defaultDropAnimationSideEffects,
-  DragStartEvent,
-  DragOverEvent,
-} from "@dnd-kit/core";
-import { useEffect, useRef, useState } from "react";
-import { arrayMove } from "@dnd-kit/sortable";
+import { DndContext, DragOverlay } from "@dnd-kit/core";
+import { useEffect } from "react";
 import { Column } from "@/components/column/columns";
 import { Card, ListCard } from "@/components/card/card";
 import { useParams } from "next/navigation";
 import { useAppSelector } from "@/hooks/useRedux";
-import { RootState, store } from "@/store";
+import { RootState } from "@/store";
 import { SkeletonBoardPage } from "@/components/ui/skeleton";
 import { customCollisionDetection } from "@/utils/collisionDetection";
-import { Input } from "@/components/ui/input";
 import { Board as BoardType } from "@/types/board.type";
 import { IconStar, IconStarFilled } from "@tabler/icons-react";
 import { DropdownMenu } from "@/components/ui/dropdown";
@@ -48,16 +37,9 @@ import {
   boardsSelectors,
   columnsSelectors,
 } from "@/store/board/board.selectors";
-import { findColumnByCardId, getNewCardIndex } from "@/utils/helper";
-import { moveCard } from "@/store/board/board.slice";
-import { CardFacade } from "@/facades/card.facade";
-import { UserFacade } from "@/facades/user.facade";
 import { CardDetail } from "@/components/card/card-detail";
-
-const TYPE_ACTIVE_DND = {
-  COLUMN: "T_COLUMN",
-  CARD: "T_CARD",
-};
+import InlineEditor from "@/components/ui/inline-editor/inline-editor";
+import useDragDrop, { TYPE_ACTIVE_DND } from "@/hooks/useDragDrop";
 
 const Board = () => {
   const { id } = useParams();
@@ -67,23 +49,19 @@ const Board = () => {
   const columns = useAppSelector((state: RootState) =>
     columnsSelectors.selectAll(state),
   );
-  const {isCardDetailView} = useAppSelector((state: RootState) => state.ui)
-  const { loading, currenBoardId } = useAppSelector(
-    (state: RootState) => state.board,
-  );
-  const pointerSensor = useSensor(PointerSensor, {
-    activationConstraint: {
-      distance: 10,
-    },
-  });
-  const sensors = useSensors(pointerSensor);
-  const [activeDragItemId, setActiveDragItemId] = useState<EntityId | null>(
-    null,
-  );
-  const [activeDragItemType, setActiveDragItemType] = useState<EntityId | null>(
-    null,
-  );
-  const [activeDragItemData, setActiveDragItemData] = useState<any>(null);
+  const { isCardDetailView } = useAppSelector((state: RootState) => state.ui);
+  const { loading } = useAppSelector((state: RootState) => state.board);
+
+  const {
+    sensors,
+    activeDragItemId,
+    activeDragItemData,
+    activeDragItemType,
+    HandleDragStart,
+    HandleDragOver,
+    HandleDragEnd,
+    dropAnimation,
+  } = useDragDrop(columns, id as EntityId);
 
   useEffect(() => {
     if (!id) return;
@@ -95,79 +73,6 @@ const Board = () => {
 
   //   UserFacade.updateRecentBoard(board);
   // }, []);
-
-  const HandleDragStart = (event: DragStartEvent) => {
-    setActiveDragItemId(event?.active?.id as EntityId);
-    setActiveDragItemType(
-      event?.active?.data?.current?.columnId
-        ? TYPE_ACTIVE_DND.CARD
-        : TYPE_ACTIVE_DND.COLUMN,
-    );
-    setActiveDragItemData(event?.active?.data?.current);
-  };
-
-  const HandleDragOver = (event: DragOverEvent) => {
-    if (activeDragItemType === TYPE_ACTIVE_DND.COLUMN) return;
-
-    const { active, over } = event;
-
-    if (!over) return;
-
-    const activeCardId = active.id as string;
-    const overCardId = over.id as string;
-
-    const activeColumn = findColumnByCardId(activeCardId, columns);
-    const overColumn = findColumnByCardId(overCardId, columns);
-
-    if (!activeColumn || !overColumn) return;
-
-    const overCardIndex = overColumn?.cards?.findIndex(
-      (card) => card._id === overCardId,
-    );
-
-    const newIndex = getNewCardIndex({
-      active,
-      over,
-      overCardIndex,
-    });
-
-    store.dispatch(
-      moveCard({
-        CardId: activeCardId,
-        fromColumnId: activeColumn._id,
-        toColumnId: overColumn._id,
-        newIndex,
-      }),
-    );
-  };
-
-  const HandleDragEnd = async (event: any) => {
-    const { active, over } = event;
-
-    if (!over) return;
-
-    if (activeDragItemType === TYPE_ACTIVE_DND.CARD) {
-      CardFacade.updateOrderAndPosition(currenBoardId!, columns);
-    }
-
-    if (activeDragItemType === TYPE_ACTIVE_DND.COLUMN && columns) {
-      const oldIndex = columns?.findIndex((c) => c._id === active.id);
-      const newIndex = columns?.findIndex((c) => c._id === over.id);
-
-      const NewColumnData = arrayMove(columns, oldIndex, newIndex);
-      BoardFacade.reorderColumn(currenBoardId!, NewColumnData);
-    }
-
-    setActiveDragItemId(null);
-    setActiveDragItemType(null);
-    setActiveDragItemData(null);
-  };
-
-  const dropAnimation = {
-    sideEffects: defaultDropAnimationSideEffects({
-      styles: { active: { opacity: "0.5" } },
-    }),
-  };
 
   if (loading || !board) return <SkeletonBoardPage />;
 
@@ -212,7 +117,7 @@ const Board = () => {
           </div>
         </div>
       </DndContext>
-      {isCardDetailView.open && <CardDetail/>}
+      {isCardDetailView.open && <CardDetail />}
     </div>
   );
 };
@@ -222,26 +127,9 @@ type props = {
 };
 
 const HeaderBoard = ({ board }: props) => {
-  const [openInput, setOpenInput] = useState<boolean>(false);
-  const input = useRef<HTMLInputElement>(null);
-
   const handleStarred = async (starred: boolean) => {
     BoardFacade.starred(board._id, starred);
   };
-
-  useEffect(() => {
-    const handleClickOutside = async (event: MouseEvent) => {
-      if (input.current && !input.current.contains(event.target as Node)) {
-        BoardFacade.editLabel(board._id, input.current.value);
-        setOpenInput(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   const MenuItemBoard: MenuItem[] = [
     {
@@ -302,26 +190,18 @@ const HeaderBoard = ({ board }: props) => {
   ];
 
   return (
-    <header className="px-5 py-3 flex justify-between bg-black/30 text-white">
+    <header className="px-5 py-3 flex justify-between bg-black/30">
       <div className="flex items-center gap-2">
-        {!openInput ? (
-          <Button
-            onClick={() => setOpenInput(true)}
-            title={board.title}
-            variant="transparent"
-            className="font-bold"
-          />
-        ) : (
-          <Input
-            ref={input}
-            defaultValue={board.title}
-            variant="borderNone"
-            autoFocus
-          />
-        )}
+        <InlineEditor
+          actionButton={false}
+          title={board.title}
+          handle={(v) => BoardFacade.editLabel(board._id, v)}
+          classname="hover:bg-white/10 px-2"
+        >
+          <div className="font-bold text-white">{board.title}</div>
+        </InlineEditor>
       </div>
       <div className="flex items-center gap-2">
-        <Button size="ic" variant="icon" icon={<ListFilter size={18} />} />
         {!board.starred ? (
           <Button
             onClick={() => handleStarred(true)}
@@ -337,16 +217,19 @@ const HeaderBoard = ({ board }: props) => {
             icon={<IconStarFilled color="white" size={18} />}
           />
         )}
-        <Button icon={<Users2 size={18} />} variant="icon" size="ic" />
         <Button
-          title="Share"
-          icon={<UserPlus size={18} />}
-          className="text-black"
-          size="sm"
+          icon={<Users2 color="white" size={18} />}
+          variant="icon"
+          size="ic"
         />
+        <Button title="Share" icon={<UserPlus size={18} />} size="sm" />
         <DropdownMenu
           trigger={
-            <Button size="ic" variant="icon" icon={<Ellipsis size={18} />} />
+            <Button
+              size="ic"
+              variant="icon"
+              icon={<Ellipsis size={18} color="white" />}
+            />
           }
           items={MenuItemBoard}
           label="Menu"

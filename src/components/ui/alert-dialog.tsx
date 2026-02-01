@@ -17,7 +17,7 @@ const AlertDialogDemo = ({trigger,label,description,onclick}:AlertDialogProps) =
 		</AlertDialog.Trigger>
 		<AlertDialog.Portal>
 			<AlertDialog.Overlay className="fixed inset-0 bg-black/20" />
-			<AlertDialog.Content className="animate-zoomIn fixed bg-background dark:ring dark:ring-gray-500 left-1/2 top-1/2 max-h-[85vh] w-[90vw] max-w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-md p-[25px]">
+			<AlertDialog.Content className="animate-zoomIn fixed bg-slate-800 dark:ring dark:ring-gray-500 left-1/2 top-1/2 max-h-[85vh] w-[90vw] max-w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-md p-[25px]">
 				<AlertDialog.Title className="m-0 text-[17px] font-bold">
 					{label}
 				</AlertDialog.Title>

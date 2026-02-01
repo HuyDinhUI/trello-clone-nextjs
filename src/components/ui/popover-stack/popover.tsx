@@ -22,8 +22,7 @@ export function PopoverContent({
         align={align}
         sideOffset={6}
         className={clsx(
-          "z-50 min-w-[220px] rounded-md bg-white shadow-md relative",
-          "data-[state=open]:animate-in data-[state=closed]:animate-out",
+          "z-50 min-w-[220px] rounded-md bg-white dark:bg-gray-800 shadow-md relative",
           className,
         )}
         {...props}

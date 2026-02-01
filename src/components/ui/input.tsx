@@ -42,7 +42,7 @@ export const InputSearch = () => {
   return (
     <div
       ref={ref}
-      className="flex items-center ring ring-gray-400 flex-1 rounded-sm relative"
+      className="flex items-center flex-1 rounded-sm relative ring ring-gray-300"
     >
       <div className="p-2">
         <IconSearch size={15} color="gray" />
@@ -55,7 +55,7 @@ export const InputSearch = () => {
         placeholder="Search"
       ></input>
       {onSearch && (
-        <div className="absolute w-full max-h-100 overflow-auto py-2 bg-white top-10 rounded dark:bg-card ring ring-gray-200 shadow-md z-999">
+        <div className="absolute w-full max-h-100 overflow-auto py-2 bg-white dark:bg-slate-800 top-10 rounded shadow-md z-999">
           <label className="uppercase text-[13px] text-gray-500 font-bold dark:text-gray-200 px-5">
             {!keyword ? "Recent boards" : "Boards"}
           </label>
@@ -65,7 +65,7 @@ export const InputSearch = () => {
                 <Link
                   href={`/board/${b.board._id}`}
                   key={b.board._id}
-                  className="flex gap-2 items-center px-5 py-2 hover:bg-gray-100"
+                  className="flex gap-2 items-center px-5 py-2 hover:bg-gray-100 dark:hover:bg-white/10"
                 >
                   <div
                     className={`w-7 h-7 bg-cover rounded-sm`}

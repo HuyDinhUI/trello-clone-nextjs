@@ -3,8 +3,6 @@
 import { Button } from "./button";
 import { InputSearch } from "./input";
 import {
-  IconHelpCircle,
-  IconBell,
   IconSun,
   IconMoon,
   IconLogout,
@@ -68,8 +66,8 @@ export const Header = () => {
     <div className="flex px-5 py-2 items-center border-b border-gray-200">
       <div className="w-[20%]">
         <Link className="flex gap-2 items-center" href={"/dashboard/boards"}>
-          <Image src={"/logo.svg"} width={25} height={50} alt=""></Image>
-          <span className="font-bold max-sm:hidden">Trello</span>
+          <Image src={"/logo.png"} width={25} height={50} alt=""></Image>
+          <span className="font-bold max-sm:hidden">Kanflow</span>
         </Link>
       </div>
       <div className="flex flex-1 justify-center gap-2">
@@ -84,7 +82,7 @@ export const Header = () => {
           </div>
         </Popover>
       </div>
-      <div className="w-[25%] flex justify-end items-center">
+      <div className="w-[25%] flex gap-2 justify-end items-center">
         {theme === "light" ? (
           <Button
             variant="icon"

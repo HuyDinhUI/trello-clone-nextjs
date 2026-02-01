@@ -18,16 +18,10 @@ export const BoardItem = ({ type, board }: BoardItemProps) => {
     BoardFacade.starred(board._id, starred);
   };
 
-  if (type === "default") {
-    return (
-      <button className="bg-gray-100 font-light shadow-sm rounded-md hover:bg-gray-200">
-        <span>{board.title}</span>
-      </button>
-    );
-  }
+  
 
   return (
-    <div className="shadow-sm rounded-md overflow-hidden">
+    <div className="shadow-sm dark:bg-slate-900 rounded-md overflow-hidden">
       <Link href={`/board/${board._id}`}>
         <div className="flex flex-col">
           <div
@@ -55,7 +49,7 @@ export const BoardItem = ({ type, board }: BoardItemProps) => {
               </button>
             </div>
           </div>
-          <div className="p-2 flex items-center dark:bg-card">
+          <div className="p-2 flex items-center">
             <span className="dark:text-white">{board.title}</span>
           </div>
         </div>
@@ -98,7 +92,7 @@ export const BoardWorkspace = ({
   icon,
 }: BoardWorkspaceProps) => {
   return (
-    <div className="">
+    <div>
       <div className="flex gap-3 mb-5 items-center">
         <label className="uppercase font-bold text-gray-700 dark:text-white/50">
           {label}

@@ -12,7 +12,7 @@ const AddToCard = () => {
           title={item.title}
           next={item.children}
         >
-          <div className="flex gap-2 my-2 px-3 py-1.5 hover:bg-gray-100">
+          <div className="flex gap-2 my-2 px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-white/5">
             <div className="flex justify-center items-center w-10 h-10 p-2 ring ring-gray-300 rounded-sm">
               {item.icon}
             </div>

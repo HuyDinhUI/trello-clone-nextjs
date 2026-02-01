@@ -30,7 +30,6 @@ const FormLogin = () => {
 
   const submitLogin = async (data: LoginBody) => {
     AuthFacade.login(data);
-    
   };
 
   return (
