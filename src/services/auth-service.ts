@@ -21,15 +21,15 @@ class Auth implements IAuth {
     }
 
     logout () {
-        return axios.delete(`${process.env.NEXT_PUBLIC_SERVER_NEXTJS}/api/auth/removeCookie`)
+        return axios.delete(`/api/auth/removeCookie`)
     }
 
     refreshToken () {
-        return axios.put(`${process.env.NEXT_PUBLIC_SERVER_NEXTJS}/api/auth/refreshToken`)
+        return axios.put(`/api/auth/refreshToken`)
     }
 
     setCookie(data: any): Promise<any> {
-        return axios.post(`${process.env.NEXT_PUBLIC_SERVER_NEXTJS}/api/auth/setCookie`, data)
+        return axios.post(`/api/auth/setCookie`, data)
     }
 }
 
